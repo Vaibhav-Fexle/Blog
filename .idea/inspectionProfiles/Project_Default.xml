@@ -1,0 +1,30 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="api.models.Employees.*" />
+          <option value="api.models.Location.*" />
+          <option value="api.models.Spacetype.*" />
+          <option value="api.models.Neighborhood.*" />
+          <option value="api.models.Footprints.*" />
+          <option value="api.models.Seats.*" />
+          <option value="api.models.Spaces.*" />
+          <option value="api.models.MoveTypes.*" />
+          <option value="api.models.Credentials.*" />
+          <option value="api.models.AccessProfiles.*" />
+          <option value="api.models.Campus.*" />
+          <option value="api.models.Floor.*" />
+          <option value="api.models.SaveMoveFilter.*" />
+          <option value="api.models.Save_filter.*" />
+          <option value="api.models.Moves.*" />
+          <option value="api.models.SpaceFootprints.*" />
+          <option value="api.models.UserCredentials.*" />
+          <option value="api.models.Map.*" />
+          <option value="api.baker_recipes.model_bakery" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

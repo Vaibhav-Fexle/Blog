@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>  
+    {% include 'head.html' %}   
+    <title>Category</title>
+</head>
+<body>
+
+    <!-- navbar -->
+    {% include 'navbar.html' %}
+    {% block content %}
+
+      <div class="categori-list">
+        <div class="container">
+            <section class="section bg-grey">
+                <div class="section-title mt-5">
+                    <h2>Categories</h2>
+                    <div class="underline"></div>
+                </div>
+                <div class="section-center services-center">
+                    <!-- single  service category-->
+                    {% for i in cat %}
+                    <article class="service">
+                        <a href="{{ i.urls }}">
+                            <h4>{{ i.title }}</h4>
+                            <div class="underline"></div>
+                            <p>{{ i.description }}</p>
+                        </a>
+                    </article>
+                    {% endfor %}
+                    <!-- end of single service category -->
+                </div>
+
+
+            </section>
+            <!-- end of services category -->
+        </div>
+    </div>
+
+    <!-- Blog -->
+    <div class="">
+        <div class="container ">
+            <div class="row">
+                <div class="section-title"></div>
+
+                <div class="col-lg-8 mb-5">
+                    <!-- featured blogs -->
+                    <section class="section" id="featured">
+                        <!-- featured-center -->
+                        <div class="section-center featured-center ">
+                            <div class="row justify-content-start">
+                                {% for i in new_blogs %}
+                                    <div class="col-lg-6">
+                                        <!-- single blog -->
+                                        <article class="blog-card">
+                                            <div class="blog-img-container">
+                                                <a href="{{ i.urls }}"><img src="{{ i.pic1.url }}" class="blog-img" alt="" /></a>
+                                                <p class="blog-date">{{ i.created }}</p>
+                                            </div>
+                                            <!-- blog info -->
+                                            <div class="blog-info">
+                                                <div class="blog-title">
+                                                    <a href="{{ i.urls }}">
+                                                        <h4>{{ i.title }}</h4>
+                                                    </a>
+                                                    {% for j in i.cat_2 %}
+                                                    <a href="{{ j.urls }}"><p>{{ j }}</p></a>
+                                                    {% endfor %}
+                                                </div>
+                                                <p>{{ i.short }}</p>
+                                                <!-- blog footer -->
+                                                <div class="blog-footer">
+                                                    <a href="/user/{{ i.owner.id }}/">
+                                                        <p>
+                                                            <span><i class="fas fa-user"></i></span>{{ i.owner }}
+                                                        </p>
+                                                    </a>
+                                                    <a href="{{ i.urls }}">
+                                                        <p>Read More...</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <!-- end of single blog -->
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                        <!-- end of blogs center -->
+                        <div class="blog-btn mt-5">
+                            <a href="/blog/" class="btn">all blogs</a>
+                        </div>
+                    </section>
+                    <!-- end of featured blogs -->
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="sidebar-left">
+                        <form class="d-flex">
+                            <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                    </div>
+
+                    <div class="sidebar-left">
+                        <h4 class="text-center">Follow Us</h4>
+                        <div class="underline"></div>
+                        <ul class="social-icons" class="text-center">
+                            <!-- single item -->
+                            <li>
+                                <a href="https://www.twitter.com" class="social-icon">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                            </li>
+                            <!-- end of single item -->
+                            <!-- single item -->
+                            <li>
+                                <a href="https://www.twitter.com" class="social-icon">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <!-- end of single item -->
+                            <!-- single item -->
+                            <li>
+                                <a href="https://www.twitter.com" class="social-icon">
+                                    <i class="fab fa-squarespace"></i>
+                                </a>
+                            </li>
+                            <!-- end of single item -->
+                            <!-- single item -->
+                            <li>
+                                <a href="https://www.twitter.com" class="social-icon">
+                                    <i class="fab fa-behance"></i>
+                                </a>
+                            </li>
+                            <!-- end of single item -->
+                            <!-- single item -->
+                            <li>
+                                <a href="https://www.twitter.com" class="social-icon">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            </li>
+                            <!-- end of single item -->
+                        </ul>
+                    </div>
+
+                    <article class="sidebar-left">
+                        <h4 class="text-center">Popular Posts</h4>
+                        <div class="underline"></div>
+                        <div class="pl-3 pr-3">
+                            {% for i in popular %}
+                                <a href="{{ i.urls }}" aria-current="true">
+                                    <div class="row mb-3">
+                                        <div class="col-4">
+                                            <img src="{{ i.pic1.url }}" class="thumbnail" alt="...">
+                                        </div>
+                                        <div class="col-8 recent-post">
+                                            <h5>{{ i.title }}</h5>
+                                            <span>{{ i.created }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </article>
+
+                    <article class="sidebar-left">
+                        <h4 class="text-center">Categories</h4>
+                        <div class="underline"></div>
+                        <ul class="list-group">
+                            {% for i in cat %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{{ i.urls }}">{{ i.title }}</a>
+                                    <span class="badge bg-primary rounded-pill">{{ i.len }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </article>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end blog -->
+
+    {% endblock %}
+
+    {% include 'footer.html' %}
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    {% include 'script.html' %}
+    
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+{% load static %}
+<nav class="nav" id="nav">
+    <div class="nav-center">
+        <!-- nav header -->
+        <div class="nav-header">
+            <img src="{% static './img/logo.png' %}" class="nav-logo" alt="" />
+            <button class="nav-btn" id="nav-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- nav links -->
+        <ul class="nav-links" style="margin: 0px 0px 0px 300px;">
+            <li><a href="/home/">home</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/blog/category/">Category</a></li>
+            <!-- <li><a href="/about/">about</a></li> -->
+            <!-- <li><a href="/contact/">contact</a></li> -->
+            <li><div class="dropdown">
+                {% if request.user.is_authenticated == True %}
+                    <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"
+                        aria-expanded="false">{{ request.user }}</a>
+                    
+                    <ul class="dropdown-menu" aria-labelledby="UserDropdown">
+                        <li><a class="dropdown-item" href="/user/">Profile</a></li>
+                        <li><a class="dropdown-item" href="/logout/">Logout</a></span>
+                    </ul>
+
+                {% else %}
+                    <a href="/login/" role="button" id="UserDropdown" 
+                        aria-expanded="false">
+                       login
+                    </a>
+                {% endif %}
+
+            </div></li>
+        </ul>
+    </div>
+</nav>
+
+
+<!-- sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div>
+        <button id="close-btn" class="close-btn">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul class="sidebar-links">
+            <li><a href="/home/">home</a></li>
+            <li><a href="/about/">about</a></li>
+            <li><a href="/contact/">contact</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/blog/category/">Category</a></li>
+            <li><a href="/blog/detail/1/">Detail</a></li>
+            <li><a href="/user/">user</a></li>
+        </ul>
+        <ul class="social-icons">
+            <!-- single item -->
+            <li class="pr-3">
+                <a href="https://www.twitter.com" class="social-icon">
+                    <i class="fab fa-facebook"></i>
+                </a>
+            </li>
+            <!-- end of single item -->
+            <!-- single item -->
+            <li>
+                <a href="https://www.twitter.com" class="social-icon">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </li>
+            <!-- end of single item -->
+            <!-- single item -->
+            <li>
+                <a href="https://www.twitter.com" class="social-icon">
+                    <i class="fab fa-squarespace"></i>
+                </a>
+            </li>
+            <!-- end of single item -->
+            <!-- single item -->
+            <li>
+                <a href="https://www.twitter.com" class="social-icon">
+                    <i class="fab fa-behance"></i>
+                </a>
+            </li>
+            <!-- end of single item -->
+            <!-- single item -->
+            <li>
+                <a href="https://www.twitter.com" class="social-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </li>
+            <!-- end of single item -->
+        </ul>
+    </div>
+</aside>
+<!-- end of sidebar -->
