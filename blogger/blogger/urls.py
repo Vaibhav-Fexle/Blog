@@ -13,30 +13,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+from django.contrib import admin, auth
 from django.urls import include,path
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.contrib.auth import urls, views
 from blog.views import *
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
 
-    path('user/', user_view, name='user_view'),
-    path('user/<int:id>/', user_view, name='user_view'),
-    path('user/edit/', user_edit_view, name='user_edit_view'),
-    path('login/', login_view, name='login_view'),
-    path('register/', register_view, name='register_view'),
-    path('logout/', logoutuser, name="logout"),
+
+
+    path('user/', User_View.as_view(), name='user_view'),
+    path('user/<int:id>/', User_View.as_view(), name='user_view'),
+    path('user/edit/', User_Edit_View.as_view(), name='user_edit_view'),
+
 
     path('blog/', include('blog.urls')),
 
-    path('home/',home),
-    path('',home_view,name='home_view'),
+    # path('home/',home, name='home'),
+    path('home/',Home_View.as_view(), name='home_view'),
+
     path('about/',about_view,name='about_view'),
     path('contact/',contact_view,name='contact_view'),
+
+
+
+    # path('login/', login_view, name='login_view'),
+    # path('logout/', logoutuser, name="logout"),
+    path('login/', auth.views.LoginView.as_view(template_name='login.html'),
+                                                name='login_view'),
+    path('logout/', auth.views.LogoutView.as_view(), name="logout"),
+
+    path('register/', Register_View.as_view(), name='register_view'),
 
 ]
 

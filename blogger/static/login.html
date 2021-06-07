@@ -15,12 +15,13 @@
         <div class="container d-flex justify-content-center">
             <article class="contact-form">
                 <h3>Login</h3>
-                <p>if you don't have a registered account, you can register <a href="/register/">here!</a></p>
-                <form action="/login/" method="POST">{% csrf_token %}
+                <p>if you don't have a registered account, you can register <a href="{% url 'register_view' %}">here!</a></p>
+                
+                <form action="{% url 'login_view' %}" method="POST">{% csrf_token %}
                     <div class="form-group">
                         <!-- inputs -->
-                        <input type="text"     name="username"  placeholder="username" class="form-control mb-3" />
-                        <input type="password" name="password1" placeholder="password" class="form-control mb-3" />
+                        <span class="form-control mb-3">{{ form.username.label_tag }}{{ form.username }}</span>
+                        <span class="form-control mb-3">{{ form.password.label_tag }}{{ form.password }}</span>
                     </div>
                     <!-- button -->
                     <!-- <p><a href="#">Forgot password?</a> </p> -->
