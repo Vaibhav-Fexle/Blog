@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from urllib.request import Request
+
+from django.http import HttpResponseRedirect
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -141,7 +145,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/img/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# LOGIN_URL = '/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'

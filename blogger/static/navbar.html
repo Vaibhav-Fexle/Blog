@@ -12,9 +12,21 @@
         <ul class="nav-links" style="margin: 0px 0px 0px 300px;">
             <li><a href="/home/">home</a></li>
             <li><a href="/blog/">Blog</a></li>
-            <li><a href="/blog/category/">Category</a></li>
+            <!-- <li><a href="/blog/category/">Category</a></li> -->
+
+            <li><div class="dropdown">
+                    <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"aria-expanded="false">Category</a>
+                    <ul class="dropdown-menu" aria-labelledby="UserDropdown">
+                        {% for i in cat %}
+                        <li><a class="dropdown-item" href="{{ i.urls }}">{{ i.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+            </li>
+
             <!-- <li><a href="/about/">about</a></li> -->
-            <!-- <li><a href="/contact/">contact</a></li> -->
+            <!-- <li><a href="/contact/">contact</a></li> -->            
+
             <li><div class="dropdown">
                 {% if request.user.is_authenticated == True %}
                     <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"
@@ -22,6 +34,7 @@
                     
                     <ul class="dropdown-menu" aria-labelledby="UserDropdown">
                         <li><a class="dropdown-item" href="/user/">Profile</a></li>
+                        <li><a href="/blog/create/" class="dropdown-item">New Blog</a></li>
                         <li><a class="dropdown-item" href="/logout/">Logout</a></span>
                     </ul>
 
@@ -31,8 +44,8 @@
                        login
                     </a>
                 {% endif %}
-
-            </div></li>
+                </div>
+            </li>
         </ul>
     </div>
 </nav>

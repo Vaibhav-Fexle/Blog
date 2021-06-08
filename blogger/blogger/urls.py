@@ -25,12 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
 
-
-
     path('user/', User_View.as_view(), name='user_view'),
-    path('user/<int:id>/', User_View.as_view(), name='user_view'),
-    path('user/edit/', User_Edit_View.as_view(), name='user_edit_view'),
-
+    path('user/profile_edit/', User_Edit_View.as_view(), name='user_profile_edit_view'),
+    path('user/<slug:slug>/', User_View.as_view(), name='user_single_view'),
 
     path('blog/', include('blog.urls')),
 
@@ -40,14 +37,11 @@ urlpatterns = [
     path('about/',about_view,name='about_view'),
     path('contact/',contact_view,name='contact_view'),
 
-
-
     # path('login/', login_view, name='login_view'),
     # path('logout/', logoutuser, name="logout"),
-    path('login/', auth.views.LoginView.as_view(template_name='login.html'),
-                                                name='login_view'),
-    path('logout/', auth.views.LogoutView.as_view(), name="logout"),
 
+    path('login/', auth.views.LoginView.as_view(template_name='login.html'),name='login_view'),
+    path('logout/', auth.views.LogoutView.as_view(), name="logout"),
     path('register/', Register_View.as_view(), name='register_view'),
 
 ]

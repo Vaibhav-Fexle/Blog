@@ -35,13 +35,14 @@ class BloggerForm(forms.ModelForm):
     class Meta:
         model = Blogger
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user','slug']
 
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['slug','comment_count','owner', 'tags']
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

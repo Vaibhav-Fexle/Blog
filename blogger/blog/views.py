@@ -1,5 +1,8 @@
 from collections import Counter
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
 from django.shortcuts import render, redirect,get_object_or_404
@@ -10,7 +13,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout, urls, views
 from django.contrib.auth.decorators import login_required
 
-from django.views import View
+# from django.views import View
+from django.utils.decorators import method_decorator
+from django.views.generic import View, ListView, DetailView
+from django.views.generic.edit import FormMixin, CreateView, ModelFormMixin
 
 from .form import *
 from .models import *
@@ -19,118 +25,170 @@ from taggit.models import Tag
 
 
 # Create your views here.
-def Popular():
-    # test = Blog.objects.filter(id__in=t3).values('title').order_by()
-    t1 = Comment.objects.all().order_by('-blog').values_list('blog', flat=True)
-    t2 = Counter(t1)
-    t3 = [ i for i,j in t2.most_common() ]
-    popular = []
-    for i in t3:
-        popular.append(Blog.objects.filter(id=i)[0])
-    return popular
+def popular():
+    [ i.count() for i in Blog.objects.all() ]
+    test = Blog.objects.all().order_by('-comment_count')
 
 def home(request,*args, **kagrs):
     return redirect("/home/")
 
+
 class Home_View(View):
     template_name = 'index.html'
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.all().order_by('-created')
 
     def get(self, request, *args, **kagrs):
-        print('---home-GET---')
-        blog_all = Blog.objects.all().order_by('-created')
-        popular = Popular()
-        recent = blog_all[0:4]
-        blog = blog_all[4:14]
         categories = Categories.objects.all()
+
+        data = serializers.serialize('json', self.queryset)
+        print('----',data)
+
         content = {
-            'popular': popular[0:4],
-            'blog': blog,
-            'blog_all': blog_all,
-            'recent': recent,
+            'popular': self.queryset.order_by('-comment_count')[0:3],
+            'blog': self.queryset[4:14],
+            'blog_all': self.queryset,
+            'recent': self.queryset[0:4],
             'cat': categories
         }
-        return render(request, "index.html", content)
+        return render(request, self.template_name, content)
 
 
-class Blog_View(View):
+class Blog_View(ListView):
+    paginator_class = Paginator
+    paginate_by = 2
+    model = Blog
+    template_name = "blog.html"
+    queryset = Blog.objects.all().order_by('-created')
+
+    def get_queryset(self):
+        if self.request.GET.get('search') != None:
+            search = self.request.GET.get('search')
+            return Blog.objects.filter(title=search).order_by('-created')
+        else:
+            return Blog.objects.all().order_by('-created')
+
 
     def get(self, request,*args, **kagrs):
-        print('---Blog-POST---')
-        blog_all = Blog.objects.all().order_by('-created')
-        recent = blog_all[0:3]
-        blog = blog_all[3:8]
+        self.paginator_class = self.paginator_class(self.get_queryset(), self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = self.paginator_class.get_page(page_number)
         categories = Categories.objects.all()
+
         content = {
-            'blog': blog,
-            'blog_all': blog_all,
-            'new': recent,
+            'blog': self.queryset.order_by('-comment_count')[0:3],
+            'blog_all': page_obj,
+            'new': self.queryset[0:3],
             'cat': categories
         }
-        return render(request, "blog.html", content)
+        return render(request, self.template_name, content)
+
+
+class Blog_Create_View(LoginRequiredMixin, View, ModelFormMixin):
+    login_url = '/login/'
+    redirect_field_name = 'User'
+    template_name = "blog_create.html"
+
+    model = Blog
+    form_class = BlogForm
+
+    def get(self, request,*args, **kagrs):
+        form = self.get_form_class()
+        categories = Categories.objects.all()
+        content = {
+            'cat': categories,
+            'form' : form
+        }
+        return render(request, self.template_name, content)
+
+    def post(self, request, *args, **kagrs):
+        self.user = request.user
+        # form = BlogForm( request.POST, request.FILES )
+        form = self.get_form()
+        if form.is_valid():
+            self.form_valid(form)
+        else:
+            self.form_invalid(form, request)
+        return redirect("/user/")
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        blog = Blog.objects.create(owner=self.user, title=data['title'], description=data['description'], pic1=data['pic1'])
+        blog.categorie.set(data['categorie'])
+        return redirect("/user/")
+
+    def form_invalid(self, form, *args, **kwargs):
+        print('form invalid ', args, kwargs)
+        return HttpResponseRedirect(form)
 
 
 class Category_View(View):
-    def get(self, request, id=None, *args, **kagrs):
-        print('---Category_View-GET---')
+    template_name = "category.html"
+    paginator_class = Paginator
+    paginate_by = 2
+
+    def get_queryset(self, slug=None, *args, **kagrs):
         if id != None:
-            new_blogs = Blog.objects.filter(categorie__id=id).order_by('-created')
+            return Blog.objects.filter(categorie__slug=slug).order_by('-created')
         else:
-            new_blogs = Blog.objects.all().order_by('-created')
-        popular = Popular()
-        cat = Categories.objects.all()
+            return Blog.objects.all().order_by('-created')
+
+    def get(self, request, slug=None, *args, **kagrs):
+        self.paginator_class = self.paginator_class(self.get_queryset(slug), self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = self.paginator_class.get_page(page_number)
+
+        categories = Categories.objects.all()
         content = {
-            'popular': popular[0:4],
-            'new_blogs': new_blogs,
-            'cat': cat
+            'popular': Blog.objects.all().order_by('-comment_count')[0:4],
+            'new_blogs': page_obj,
+            'cat': categories
         }
-        return render(request, "category.html", content)
+        return render(request, self.template_name, content)
 
 
 class Detail_View(View):
-    def get(self, request, id, *args, **kagrs):
-        print('---Detail_View-GET---')
-        blog_all = Blog.objects.all().order_by('-created')
-        new = blog_all[0:3]
-        cat = Categories.objects.all()
-        blog = get_object_or_404(Blog, id=id)
-        comment = Comment.objects.filter(blog=blog).order_by('-created')
-        content = {
-            'blog':blog,
-            'commment':comment,
-            'blog_all': new,
-            'cat': cat
-        }
-        return render(request, "detail.html", content)
+    template_name = "detail.html"
 
+    def get(self, request, slug=None, *args, **kagrs):
+        object = get_object_or_404(Blog, slug=slug)
+        categories = Categories.objects.all()
+        comment = Comment.objects.filter(blog=object.id).order_by('-created')
+        content = {
+            'blog': object,
+            'commment':comment,
+            'cat': categories
+        }
+        return render(request, self.template_name, content)
+
+    @method_decorator(login_required)
     def post(self, request, *args, **kagrs):
-        print('---Detail_View-POST---')
-        blog = get_object_or_404(Blog, id=kagrs['id'])
+        blog = get_object_or_404(Blog, title=kagrs['slug'])
+        owner = None
         if request.user.is_authenticated == True:
-            fullname = request.user.first_name+request.user.last_name
-            email = request.user.email
             owner = request.user
-        else:
-            fullname = request.POST.get('fullname')
-            email = request.POST.get('email')
-            owner = None
         description = request.POST.get('description')
-        Comment.objects.create(blog=blog, owner=owner, fullname=fullname, email=email, description=description )
+        Comment.objects.create(blog=blog, owner=owner,description=description )
+        blog.count()
         return HttpResponseRedirect(request.path)
 
 
-class User_Edit_View(View):
+class User_Edit_View(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'User'
+
+    template_name = "useredit.html"
+
     def get(self, request, *args, **kagrs):
-        print('---User_Edit_View-GET---')
         userr = request.user.blogger
         form = BloggerForm(instance=userr)
+        categories = Categories.objects.all()
         content = {
-            'form' : form
+            'form' : form,
+            'cat': categories
         }
-        return render(request, "useredit.html", content)
+        return render(request, self.template_name, content)
 
     def post(self, request, *args, **kagrs):
-        print('---User_Edit_View-POST---')
         userr = request.user.blogger
         form = BloggerForm(request.POST, request.FILES, instance=userr)
         if form.is_valid():
@@ -138,19 +196,30 @@ class User_Edit_View(View):
         return redirect("/user/")
 
 
-class User_View(View):
-    def get(get, request, id=None, *args, **kagrs):
-        print('---User_View-GET---')
-        if id != None:
-            user = User.objects.filter(id=id)[0]
-        else:
-            user = request.user
-        blog_all = Blog.objects.filter(owner=user)
+class User_View(LoginRequiredMixin, DetailView ):         #   view to detailview
+    template_name = "user.html"
+    login_url = '/login/'
+    redirect_field_name = 'User'
+    model = Blogger
+    # slug_field = Blogger.slug
+
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or self.request.user.blogger.slug
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()).user or self.request.user
+
+    def get_queryset(self):
+        return Blog.objects.filter(owner=self.get_object())
+
+    def get(self, request, *args, **kagrs):
+        categories = Categories.objects.all()
         content = {
-            'blog_all': blog_all,
-            'user':user
+            'blog_all': self.get_queryset(),
+            'user': self.get_object(),
+            'cat': categories
         }
-        return render(request, "user.html", content)
+        return render(request, self.template_name, content)
 
 
 #TODO       LOGIN - LOGOUT - REGISTER
@@ -194,6 +263,7 @@ class Register_View(View):
 
 
 #TODO REMOVED
+
 def about_view(request,*args, **kagrs):
     blog = Blog.objects.all()
     content={

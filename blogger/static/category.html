@@ -10,7 +10,7 @@
     <!-- navbar -->
     {% include 'navbar.html' %}
     {% block content %}
-
+<!-- 
       <div class="categori-list">
         <div class="container">
             <section class="section bg-grey">
@@ -19,7 +19,6 @@
                     <div class="underline"></div>
                 </div>
                 <div class="section-center services-center">
-                    <!-- single  service category-->
                     {% for i in cat %}
                     <article class="service">
                         <a href="{{ i.urls }}">
@@ -29,14 +28,12 @@
                         </a>
                     </article>
                     {% endfor %}
-                    <!-- end of single service category -->
                 </div>
 
 
             </section>
-            <!-- end of services category -->
         </div>
-    </div>
+    </div> -->
 
     <!-- Blog -->
     <div class="">
@@ -71,7 +68,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner.id }}/">
+                                                    <a href="/user/{{ i.owner }}/">
                                                         <p>
                                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>
@@ -88,6 +85,25 @@
 
                             </div>
                         </div>
+
+                        <div class="blog-btn mt-5">
+                            <span class="step-links">
+                                {% if blog_all.has_previous %}
+                                    <a class="btn" href="?page=1">&laquo; first</a>
+                                    <a class="btn" href="?page={{ new_blogs.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <span class="current">
+                                    <span> Page {{ new_blogs.number }} of {{ new_blogs.paginator.num_pages }} </span>
+                                </span>
+
+                                {% if new_blogs.has_next %}
+                                    <a class="btn" href="?page={{ new_blogs.next_page_number }}">next</a>
+                                    <a class="btn" href="?page={{ new_blogs.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+
                         <!-- end of blogs center -->
                         <div class="blog-btn mt-5">
                             <a href="/blog/" class="btn">all blogs</a>
@@ -98,54 +114,18 @@
 
                 <div class="col-lg-4">
 
-                    <div class="sidebar-left">
-                        <form class="d-flex">
-                            <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
-                    </div>
-
-                    <div class="sidebar-left">
-                        <h4 class="text-center">Follow Us</h4>
+                    <article class="sidebar-left">
+                        <h4 class="text-center">Categories</h4>
                         <div class="underline"></div>
-                        <ul class="social-icons" class="text-center">
-                            <!-- single item -->
-                            <li>
-                                <a href="https://www.twitter.com" class="social-icon">
-                                    <i class="fab fa-facebook"></i>
-                                </a>
-                            </li>
-                            <!-- end of single item -->
-                            <!-- single item -->
-                            <li>
-                                <a href="https://www.twitter.com" class="social-icon">
-                                    <i class="fab fa-linkedin"></i>
-                                </a>
-                            </li>
-                            <!-- end of single item -->
-                            <!-- single item -->
-                            <li>
-                                <a href="https://www.twitter.com" class="social-icon">
-                                    <i class="fab fa-squarespace"></i>
-                                </a>
-                            </li>
-                            <!-- end of single item -->
-                            <!-- single item -->
-                            <li>
-                                <a href="https://www.twitter.com" class="social-icon">
-                                    <i class="fab fa-behance"></i>
-                                </a>
-                            </li>
-                            <!-- end of single item -->
-                            <!-- single item -->
-                            <li>
-                                <a href="https://www.twitter.com" class="social-icon">
-                                    <i class="fab fa-instagram"></i>
-                                </a>
-                            </li>
-                            <!-- end of single item -->
+                        <ul class="list-group">
+                            {% for i in cat %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{{ i.urls }}">{{ i.title }}</a>
+                                    <span class="badge bg-primary rounded-pill">{{ i.len }}</span>
+                                </li>
+                            {% endfor %}
                         </ul>
-                    </div>
+                    </article>
 
                     <article class="sidebar-left">
                         <h4 class="text-center">Popular Posts</h4>
@@ -167,18 +147,6 @@
                         </div>
                     </article>
 
-                    <article class="sidebar-left">
-                        <h4 class="text-center">Categories</h4>
-                        <div class="underline"></div>
-                        <ul class="list-group">
-                            {% for i in cat %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="{{ i.urls }}">{{ i.title }}</a>
-                                    <span class="badge bg-primary rounded-pill">{{ i.len }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </article>
                 </div>
 
             </div>
