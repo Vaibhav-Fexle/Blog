@@ -27,13 +27,13 @@ from taggit.models import Tag
 from .serializers import *
 
 # Create your views here.
-def popular():
-    # [ i.count() for i in Blog.objects.all() ]
-    # test = Blog.objects.all().order_by('-comment_count')
-
-    test = Blog.objects.all()
-    for i in test:
-        i.count()
+# def popular():
+#     # [ i.count() for i in Blog.objects.all() ]
+#     # test = Blog.objects.all().order_by('-comment_count')/////////////////////////
+#
+#     test = Blog.objects.all()
+#     for i in test:
+#         i.count()
 
 def home(request,*args, **kagrs):
     return redirect("/home/")
@@ -134,21 +134,31 @@ class Category_View(View):
         return render(request, self.template_name, data)
 
 
-class Detail_View(View):
+class Detail_View(DetailView):
     template_name = "detail.html"
+    model = Blog
+
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or None
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
+
+    def get_queryset(self):
+        return Comment.objects.filter(blog=self.get_object().id).order_by('-created')
 
     def get(self, request, slug=None, *args, **kagrs):
-        object = get_object_or_404(Blog, slug=slug)
-        comment = Comment.objects.filter(blog=object.id).order_by('-created')
 
         data = data_all.initial_data
-        data.update({'blog_obj': object, 'commment':comment })
+        data.update({'blog_obj': self.get_object(),
+                     'commment': self.get_queryset()
+                     })
 
         return render(request, self.template_name, data)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kagrs):
-        blog = get_object_or_404(Blog, title=kagrs['slug'])
+        blog = self.get_object()
         owner = None
         if request.user.is_authenticated == True:
             owner = request.user
