@@ -76,11 +76,15 @@
                                     <a class="btn" href="?page=1">&laquo; first</a>
                                     <a class="btn" href="?page={{ blog_all.previous_page_number }}">previous</a>
                                 {% endif %}
-
+                                {% if pages > 1 %}
                                 <span class="current">
                                     <span> Page {{ blog_all.number }} of {{ blog_all.paginator.num_pages }} </span>
                                 </span>
-
+                                {% else %}
+                                <span class="current">
+                                    <span> No Result found </span>
+                                </span>
+                                {% endif %}
                                 {% if blog_all.has_next %}
                                     <a class="btn" href="?page={{ blog_all.next_page_number }}">next</a>
                                     <a class="btn" href="?page={{ blog_all.paginator.num_pages }}">last &raquo;</a>
@@ -99,7 +103,7 @@
                         <!-- featured-center -->
                         <div class="section-center featured-center ">
                             <div class="row justify-content-start">
-                                {% for i in new %}
+                                {% for i in recent %}
                                     <div class="col-lg-6">
                                         <!-- single blog -->
                                         <article class="blog-card">
@@ -138,7 +142,7 @@
                 <div class="col-lg-4">
 
                     <div class="sidebar-left">
-                        <form class="d-flex">{% csrf_token %}
+                        <form class="d-flex">
                             <input class="form-control mr-2" name="search" type="search" placeholder="Search" aria-label="Search">
                             <button class="btn btn-outline-success" type="submit">Search</button>
                         </form>
@@ -148,7 +152,7 @@
                         <h4 class="text-center">Categories</h4>
                         <div class="underline"></div>
                         <ul class="list-group">
-                            {% for i in cat %}
+                            {% for i in categories %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <a href="{{ i.urls }}">{{ i.title }}</a>
                                     <span class="badge bg-primary rounded-pill">{{ i.len }}</span>
@@ -161,7 +165,7 @@
                         <h4 class="text-center">Popular Posts</h4>
                         <div class="underline"></div>
                         <div class="pl-3 pr-3">
-                            {% for i in blog %}
+                            {% for i in popular %}
                                 <a href="{{ i.urls }}" aria-current="true">
                                     <div class="row mb-3">
                                         <div class="col-4">

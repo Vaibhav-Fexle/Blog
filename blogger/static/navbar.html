@@ -17,7 +17,7 @@
             <li><div class="dropdown">
                     <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"aria-expanded="false">Category</a>
                     <ul class="dropdown-menu" aria-labelledby="UserDropdown">
-                        {% for i in cat %}
+                        {% for i in categories %}
                         <li><a class="dropdown-item" href="{{ i.urls }}">{{ i.title }}</a></li>
                         {% endfor %}
                     </ul>

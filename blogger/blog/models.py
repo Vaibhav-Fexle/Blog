@@ -38,7 +38,7 @@ class Blog(models.Model):
     slug = models.SlugField(default=slugify(title))
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title) # or self.slug
+        self.slug = slugify(self.title)+slugify(self.id) # or self.slug
         super().save(*args, **kwargs)
 
     def __str__(self):
