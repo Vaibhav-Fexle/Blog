@@ -108,7 +108,6 @@ class Blog_Create_View(LoginRequiredMixin, View, ModelFormMixin):
         return redirect("/user/")
 
     def form_invalid(self, form, *args, **kwargs):
-        print('form invalid ', args, kwargs)
         return HttpResponseRedirect(form)
 
 
@@ -213,8 +212,6 @@ class User_View(LoginRequiredMixin, DetailView ):
         return Blog.objects.filter(owner=self.get_object())
 
     def get(self, request, *args, **kagrs):
-        print('-------',self.__dict__)
-
         data = data_all.initial_data
         data.update({'user': self.get_object(),
                      'blog_all': self.get_queryset() })
