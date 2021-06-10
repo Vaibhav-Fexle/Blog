@@ -27,13 +27,13 @@ from taggit.models import Tag
 from .serializers import *
 
 # Create your views here.
-# def popular():
-#     # [ i.count() for i in Blog.objects.all() ]
-#     # test = Blog.objects.all().order_by('-comment_count')/////////////////////////
-#
-#     test = Blog.objects.all()
-#     for i in test:
-#         i.count()
+def popular():
+    # [ i.count() for i in Blog.objects.all() ]
+    # test = Blog.objects.all().order_by('-comment_count')/////////////////////////
+
+    test = Blogger.objects.all()
+    for i in test:
+        i.save()
 
 def home(request,*args, **kagrs):
     return redirect("/home/")
@@ -174,9 +174,11 @@ class User_Edit_View(LoginRequiredMixin, View):
 
     template_name = "useredit.html"
 
+    def get_user(self):
+        return self.request.user.blogger
+
     def get(self, request, *args, **kagrs):
-        userr = request.user.blogger
-        form = BloggerForm(instance=userr)
+        form = BloggerForm(instance=self.get_user())
 
         data = data_all.initial_data
         data.update({'form' : form, })
@@ -184,8 +186,7 @@ class User_Edit_View(LoginRequiredMixin, View):
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):
-        userr = request.user.blogger
-        form = BloggerForm(request.POST, request.FILES, instance=userr)
+        form = BloggerForm(request.POST, request.FILES, instance=self.get_user())
         if form.is_valid():
             form.save()
         else:
@@ -212,9 +213,11 @@ class User_View(LoginRequiredMixin, DetailView ):
         return Blog.objects.filter(owner=self.get_object())
 
     def get(self, request, *args, **kagrs):
+        print('-------',self.__dict__)
 
         data = data_all.initial_data
-        data.update({'user': self.get_object(),'blog_all': self.get_queryset(),})
+        data.update({'user': self.get_object(),
+                     'blog_all': self.get_queryset() })
 
         return render(request, self.template_name, data)
 

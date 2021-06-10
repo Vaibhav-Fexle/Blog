@@ -9,12 +9,12 @@ from taggit.models import Tag
 # Create your models here.
 
 class Categories(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True )
     description = models.CharField(max_length=100)
     slug = models.SlugField(default=slugify(title))
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title) # or self.slug
+        self.slug = slugify(self.title)+slugify(self.id) # or self.slug
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -96,5 +96,5 @@ class Blogger(models.Model):
     slug = models.SlugField(default=slugify(user))
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.user) # or self.slug
+        self.slug = slugify(self.user)# or self.slug
         super().save(*args, **kwargs)

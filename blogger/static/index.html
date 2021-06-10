@@ -202,13 +202,13 @@
                                                     <a href="{{ i.urls }}">
                                                         <h4>{{ i.title }}</h4>
                                                     </a>
-                                                    <p>{% for j in i.cat_1 %}<a href="{{ i.urls }}">{{j}}</a>{% endfor %}</p>
+                                                    <p>{% for j in i.cat_1 %}<a href="{{ j.urls }}">{{j}}</a>{% endfor %}</p>
                                                 </div>
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner.id }}/"><p>
-                                                        <span><i class="fas fa-user"></i></span>{{ i.owner}}
+                                                    <a href="/user/{{ i.owner }}/"><p>
+                                                        <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                     </p></a>
                                                     <a href="{{ i.urls }}"><p>Read More...</p></a>
                                                 </div>
@@ -255,7 +255,7 @@
                                 <p> {{ i.short }} </p>
                                 <!-- blog footer -->
                                 <div class="blog-footer">
-                                    <a href="/user/{{ i.owner.id }}/">
+                                    <a href="/user/{{ i.owner }}/">
                                         <p>
                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                         </p>
