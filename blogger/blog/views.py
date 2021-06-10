@@ -27,13 +27,13 @@ from taggit.models import Tag
 from .serializers import *
 
 # Create your views here.
-def popular():
+# def popular():
     # [ i.count() for i in Blog.objects.all() ]
-    # test = Blog.objects.all().order_by('-comment_count')/////////////////////////
-
-    test = Blogger.objects.all()
-    for i in test:
-        i.save()
+    # test = Blog.objects.all().order_by('-comment_count')
+    #
+    # test = Blogger.objects.all()
+    # for i in test:
+    #     i.save()
 
 def home(request,*args, **kagrs):
     return redirect("/home/")
