@@ -24,10 +24,11 @@ class Categories(models.Model):
     def urls(self):
         return f"/blog/category/{self.slug}/"
 
+#TODO change pic1 to photo/image
 class Blog(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    owner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     pic1 = models.ImageField( default='noimage.jpg', upload_to='blog/')
     categorie = models.ManyToManyField(Categories)
     created = models.DateTimeField(auto_now_add=True)
@@ -64,7 +65,7 @@ class Blog(models.Model):
 
 class Comment(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 

@@ -38,6 +38,10 @@
                                     <span>#Tags: </span>
                                     <cite title="Source Title">Python, Django, Web Development</cite>
                                 </figcaption> -->
+                                {% if request.user == blog_obj.owner %}
+                                <a class="btn" href="/blog/post/{{blog_obj.slug}}/update/">Edit</a>
+                                <a class="btn" href="/blog/post/{{blog_obj.slug}}/delete/">Delete</a>
+                                {% endif %}
                             </div>
                         </div>
 
@@ -109,6 +113,7 @@
 
                     </section>
                     <!-- end of featured Detail -->
+
                 </div>
 
                 <div class="col-lg-4">

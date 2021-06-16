@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 # from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.generic import View, ListView, DetailView
-from django.views.generic.edit import FormMixin, CreateView, ModelFormMixin
+from django.views.generic.edit import FormMixin, CreateView, ModelFormMixin, DeletionMixin, DeleteView
 
 from .form import *
 from .models import *
@@ -79,29 +79,35 @@ class Blog_View(ListView):
         return render(request, self.template_name, data)
 
 
-class Blog_Create_View(LoginRequiredMixin, View, ModelFormMixin):
+class Blog_Create_View(LoginRequiredMixin, View ):
     login_url = '/login/'
     redirect_field_name = 'User'
     template_name = "blog_create.html"
-
     model = Blog
-    form_class = BlogSerializer()
 
-    def get(self, request,*args, **kagrs):
-        data['form'] = self.get_form_class()
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or None
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
+
+    def get(self, request,*args, **kwargs):
+        data['form'] = BlogSerializer()
+
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):
         self.user = request.user
         form = BlogSerializer(data=request.POST)
         if form.is_valid():
-            self.form_valid(form.data)
+            self.post_valid(form.data)
         else:
             data['form'] = form
             return render(self.request, self.template_name, data)
         return redirect("/user/")
 
-    def form_valid(self, data ):
+
+    def post_valid(self, data ):
         blog = Blog.objects.create( owner=self.user,
                                     title=data['title'],
                                     description=data['description']
@@ -111,6 +117,51 @@ class Blog_Create_View(LoginRequiredMixin, View, ModelFormMixin):
         blog.categorie.set(data['categorie'])
         blog.save()
         return redirect("/user/")
+
+
+class Blog_Update_View(LoginRequiredMixin, View ):
+    login_url = '/login/'
+    template_name = "blog_create.html"
+    model = Blog
+
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or None
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
+
+    def get(self, request,*args, **kwargs):
+        data['form'] = BlogSerializer(instance=self.get_object())
+        return render(request, self.template_name, data)
+
+    def post(self, request, *args, **kagrs):
+        form = BlogSerializer(instance=self.get_object(), data=request.POST, partial=True)
+        if form.is_valid():
+            blog = form.save()
+            if request.FILES.get('pic1'):
+                blog.pic1 = request.FILES.get('pic1')
+            blog.save()
+        else:
+            data['form'] = form
+            return render(self.request, self.template_name, data)
+
+        return HttpResponseRedirect('/blog/post/{}/'.format(blog.slug))
+
+
+class Blog_Delete_View(DeleteView, LoginRequiredMixin):
+    login_url = '/login/'
+    template_name = "blog_delete.html"
+    model = Blog
+    success_url = '/user/'
+
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or None
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
+
+    def get(self, request, *args,**kwargs):
+        return render(self.request, self.template_name, {'blog_obj':self.get_object()})
 
 
 class Category_View(View):
@@ -145,7 +196,7 @@ class Detail_View(DetailView):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
-    def get(self, request, slug=None, *args, **kagrs):
+    def get(self, request, *args, **kagrs):
         data['blog_obj'] = self.get_object()
 
         return render(request, self.template_name, data)
@@ -170,7 +221,6 @@ class User_Edit_View(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kagrs):
         data['form'] = BloggerSerializer(instance=self.get_user())
-        print('=====',data['form'])
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):

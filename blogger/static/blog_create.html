@@ -16,17 +16,32 @@
         <br>
         <div class="container d-flex justify-content-center">
             <article class="contact-form">
-                <h3>Blog</h3>
-                <hr>
-                <!-- class="form-horizontal form-group" -->
-                <form  action="/blog/create/" method="POST", enctype="multipart/form-data"> 
-                    {% csrf_token %}
-                    
+        
+                {% if form.instance %}
+                    <h3>{{form.instance}} - update</h3>
+                    <hr>
+                    <!-- class="form-horizontal form-group" -->
+                    <form  action="/blog/post/{{form.instance.slug}}/update/" method="POST", enctype="multipart/form-data"> 
+                        {% csrf_token %}
                         {% render_form form template_pack='rest_framework/vertical' %}
+                        <button type="submit" class="contact-btn btn">Update</button>
+                        <br><br>
+                        <button type="cancel" href="../" class="contact-btn btn">Cancel</button>
+                        
+                    </form>
+                {% else %}
+                    <h3>Blog</h3>   
+                    <hr>
+                    <!-- class="form-horizontal form-group" -->
+                    <form  action="/blog/create/" method="POST", enctype="multipart/form-data"> 
+                        {% csrf_token %}
+                        {% render_form form template_pack='rest_framework/vertical' %}
+                        <button type="submit" class="contact-btn btn">Create Blog</button>
+                        <br><br>
 
-                    <button type="submit" class="contact-btn btn">Create Blog</button>
-                </form>
-
+                        <button type="cancel" href="../" class="contact-btn btn">Cancel</button>
+                    </form>
+                {% endif %}
 
             </article>
         </div>
