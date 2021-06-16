@@ -24,12 +24,11 @@ class Categories(models.Model):
     def urls(self):
         return f"/blog/category/{self.slug}/"
 
-
 class Blog(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField()
     owner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    pic1 = models.ImageField(null=True, blank=True, default='user/profil.png', upload_to='blog/')
+    pic1 = models.ImageField( default='noimage.jpg', upload_to='blog/')
     categorie = models.ManyToManyField(Categories)
     created = models.DateTimeField(auto_now_add=True)
     tags = TaggableManager()
@@ -38,17 +37,17 @@ class Blog(models.Model):
     slug = models.SlugField(default=slugify(title))
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)+slugify(self.id) # or self.slug
+        self.slug = slugify(self.title)+slugify(self.id)
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
     def short(self):
-        return self.description[0:140] + '...'
+        return self.description[0:100] + '...'
     def comment(self):
         return Comment.objects.filter(blog=self).order_by('-created')
     def urls(self):
-        return f"/blog/detail/{self.slug}/"
+        return f"/blog/post/{self.slug}/"
     def cat_1(self):
         cat_1 = [i for i in self.categorie.all()]
         return cat_1[0:1]
@@ -56,11 +55,11 @@ class Blog(models.Model):
         cat_2 = [i for i in self.categorie.all()]
         return cat_2[0:2]
 
-
     def count(self):
         self.comment_count = len(self.comment())
         self.save()
         return len(self.comment())
+
 
 
 class Comment(models.Model):
@@ -87,7 +86,7 @@ class Reply(models.Model):                                                  # no
 
 
 class Blogger(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # DOB = models.DateField(null=True)
     user_pic = models.ImageField(default='user/profil.png', upload_to='user/', )
     bio = models.TextField(blank=True, null=True, default="")
@@ -96,5 +95,5 @@ class Blogger(models.Model):
     slug = models.SlugField(default=slugify(user))
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.user)# or self.slug
+        self.slug = slugify(self.user)      # or self.slug
         super().save(*args, **kwargs)

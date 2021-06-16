@@ -30,12 +30,12 @@
                         <!-- featured-center -->
                         <div class="section-center featured-center ">
                             <div class="row justify-content-start">
-                                {% for i in blog_all %}
+                                {% for i in blog_objs %}
                                     <div class="col-lg-6">
                                         <!-- single blog -->
                                         <article class="blog-card">
                                             <div class="blog-img-container">
-                                                <a href="{{ i.urls }}"><img src="{{ i.pic1.url }}" class="blog-img" alt="" /></a>
+                                                <a href="{{ i.urls }}"><img src="{{ i.pic1.url }}" class="blog-img" alt="{{i.title}}" /></a>
                                                 <p class="blog-date">{{ i.created }}</p>
                                             </div>
                                             <!-- blog info -->
@@ -72,22 +72,22 @@
 
                         <div class="blog-btn mt-5">
                             <span class="step-links">
-                                {% if blog_all.has_previous %}
+                                {% if blog_objs.has_previous %}
                                     <a class="btn" href="?page=1">&laquo; first</a>
-                                    <a class="btn" href="?page={{ blog_all.previous_page_number }}">previous</a>
+                                    <a class="btn" href="?page={{ blog_objs.previous_page_number }}">previous</a>
                                 {% endif %}
                                 {% if pages > 1 %}
                                 <span class="current">
-                                    <span> Page {{ blog_all.number }} of {{ blog_all.paginator.num_pages }} </span>
+                                    <span> Page {{ blog_objs.number }} of {{ blog_objs.paginator.num_pages }} </span>
                                 </span>
                                 {% else %}
                                 <span class="current">
                                     <span> No Result found </span>
                                 </span>
                                 {% endif %}
-                                {% if blog_all.has_next %}
-                                    <a class="btn" href="?page={{ blog_all.next_page_number }}">next</a>
-                                    <a class="btn" href="?page={{ blog_all.paginator.num_pages }}">last &raquo;</a>
+                                {% if blog_objs.has_next %}
+                                    <a class="btn" href="?page={{ blog_objs.next_page_number }}">next</a>
+                                    <a class="btn" href="?page={{ blog_objs.paginator.num_pages }}">last &raquo;</a>
                                 {% endif %}
                             </span>
                         </div>

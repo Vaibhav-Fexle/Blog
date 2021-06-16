@@ -3,38 +3,47 @@ from rest_framework.fields import ListField
 from .models import *
 from rest_framework import serializers
 
-class CategoriesSerializer(serializers.Serializer):
+
+class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
-        field = "__all__"
+        fields = "__all__"
         many = True
 
-class BlogSerializer(serializers.Serializer):
+
+class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        field = "__all__"
-        many = True
+        fields = ['title','description','categorie','pic1']
+        # exclude = ['slug', 'comment_count', 'owner']
 
-class CommentSerializer(serializers.Serializer):
+
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        field = "__all__"
+        fields = "__all__"
         many = True
 
 
-class BloggerSerializer(serializers.Serializer):
+class BloggerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blogger
-        field = "__all__"
+        # fields = "__all__"
+        exclude = ['slug', 'user']
         many = True
+
 
 class DataSerializer(serializers.Serializer):
-    categoties = CategoriesSerializer(required=False, many=True)
-    blog = ListField(BlogSerializer(required=False, many=True))
-    comments = CommentSerializer(required=False, many=True)
-    blogger = BloggerSerializer(required=False, many=True)
+    categoties = serializers.SerializerMethodField('get_categoties')
+    blog = serializers.SerializerMethodField('get_blog')
+    blogger = serializers.SerializerMethodField('get_blogger')
 
+    def get_blogger(self):
+        return BloggerSerializer(Blogger.objects.all(), many=True)
+    def get_blog(self):
+        return BlogSerializer(Blog.objects.all().order_by('-created')[4:14], many=True)
+    def get_categoties(self):
+        return CategoriesSerializer(Categories.objects.all(), many=True)
     class Meta:
-        model = Categories, Blog, Comment, Blogger
-        field=['categories', 'blog', 'comments', 'blogger' ]
-        many = True
+        fields = ['categoties', 'blog', 'blogger']
+

@@ -47,7 +47,7 @@
                         <!-- featured-center -->
                         <div class="section-center featured-center ">
                             <div class="row justify-content-start">
-                                {% for i in blog_all %}
+                                {% for i in blog_objs %}
                                     <div class="col-lg-6">
                                         <!-- single blog -->
                                         <article class="blog-card">
@@ -88,19 +88,19 @@
 
                         <div class="blog-btn mt-5">
                             <span class="step-links">
-                                {% if blog_all.has_previous %}
+                                {% if blog_objs.has_previous %}
                                     <a class="btn" href="?page=1">&laquo; first</a>
-                                    <a class="btn" href="?page={{ blog_all.previous_page_number }}">previous</a>
+                                    <a class="btn" href="?page={{ blog_objs.previous_page_number }}">previous</a>
                                 {% endif %}
                                 {% if pages > 1 %}
                                 <span class="current">
-                                    <span> Page {{ blog_all.number }} of {{ blog_all.paginator.num_pages }} </span>
+                                    <span> Page {{ blog_objs.number }} of {{ blog_objs.paginator.num_pages }} </span>
                                 </span>
                                 {% endif %}
 
-                                {% if blog_all.has_next %}
-                                    <a class="btn" href="?page={{ blog_all.next_page_number }}">next</a>
-                                    <a class="btn" href="?page={{ blog_all.paginator.num_pages }}">last &raquo;</a>
+                                {% if blog_objs.has_next %}
+                                    <a class="btn" href="?page={{ blog_objs.next_page_number }}">next</a>
+                                    <a class="btn" href="?page={{ blog_objs.paginator.num_pages }}">last &raquo;</a>
                                 {% endif %}
                             </span>
                         </div>
@@ -111,6 +111,49 @@
                         </div>
                     </section>
                     <!-- end of featured blogs -->
+
+                     <div class="section-title mt-5">
+                        <h2>Recent Posts</h2>
+                        <div class="underline"></div>
+                    </div>
+                    <section class="section" id="featured">
+                        <!-- featured-center -->
+                        <div class="section-center featured-center ">
+                            <div class="row justify-content-start">
+                                {% for i in recent %}
+                                    <div class="col-lg-6">
+                                        <!-- single blog -->
+                                        <article class="blog-card">
+                                            <!-- blog info -->
+                                            <div class="blog-info">
+                                                <div class="blog-title">
+                                                    <a href="{{ i.urls }}">
+                                                        <h4>{{ i.title }}</h4>
+                                                    </a>
+                                                    {% for j in i.cat_2 %}
+                                                    <a href="{{ j.urls }}"><p>{{ j }}</p></a>
+                                                    {% endfor %}
+                                                </div>
+                                                <p>{{ i.short }}</p>
+                                                <!-- blog footer -->
+                                                <div class="blog-footer">
+                                                    <a href="/user/{{ i.owner }}/">
+                                                        <p>
+                                                            <span><i class="fas fa-user"></i></span>{{ i.owner }}
+                                                        </p>
+                                                    </a>
+                                                    <a href="{{ i.urls }}">
+                                                        <p>Read More...</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </article>
+                                        <!-- end of single blog -->
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
                 <div class="col-lg-4">

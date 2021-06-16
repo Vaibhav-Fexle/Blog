@@ -3,7 +3,7 @@
 {% load static %}
 <head>  
     {% include 'head.html' %}   
-    <title>Detail:{{blog.title}}</title>
+    <title>{{blog_obj.title}}</title>
 </head>
 <body>
 
@@ -19,7 +19,7 @@
                     <!-- featured Details -->
                     <section class="section" id="featured">
                         <div class="detail">
-                            <img src="{{ blog_obj.pic1.url }}" class="img-fluid" alt="...">
+                            <img src="{{ blog_obj.pic1.url }}" class="img-fluid" alt="{{blog_obj.title}}">
                             <div class="post-cat mt-5">
                                 {% for i in blog_obj.categorie.all %}
                                 <a href="{{ i.urls }}" class="btn">{{ i }}</a>
@@ -34,10 +34,10 @@
                             <div class="article mt-3">
                                 <h1>{{ blog_obj.title }}</h1>
                                 <p class="mt-3">{{ blog_obj.description }}</p>
-                                <figcaption class="blockquote-footer mt-5">
+                                <!-- <figcaption class="blockquote-footer mt-5">
                                     <span>#Tags: </span>
                                     <cite title="Source Title">Python, Django, Web Development</cite>
-                                </figcaption>
+                                </figcaption> -->
                             </div>
                         </div>
 

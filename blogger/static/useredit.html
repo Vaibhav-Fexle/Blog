@@ -10,35 +10,42 @@
     <!-- navbar -->
     {% include 'navbar.html' %}
     {% block content %}
-
+    {% load rest_framework %}
     <div class="pb-5">
+        <br><br>
         <div class="container d-flex justify-content-center">
             <article class="contact-form">
                 <h3>User Details</h3>
-                <form action="/user/profile_edit/" method="POST", enctype="multipart/form-data">
+                <hr>
+                <form  action="/user/profile_edit/" method="POST", enctype="multipart/form-data"> 
                     {% csrf_token %}
-                    <div class="form-group">
-                        {{ form.as_p }}
-                    </div>
-                    <!-- button -->
-                    <!-- <p><a href="#">Forgot password?</a> </p> -->
-                    <button type="submit" class="contact-btn btn">Submit</button>
+                    
+                        {% render_form form template_pack='rest_framework/vertical' %}
+                    <br>
+                    <button type="submit" class="contact-btn btn">Update</button>
                 </form>
             </article>
         </div>
     </div>
+    <br>
 
     <!-- newsletter -->
+    <br>
     <section class="section newsletter" id="newsletter">
+        <br>
         <div class="container section-center newsletter-center">
+            <br>
             <div class="newsletter-title">
-                <h3>want latest post info and updates?</h3>
+            <!--     <h3>want latest post info and updates?</h3>
                 <p>Sign up for newsletter and stay up to date</p>
             </div>
             <form class="newsletter-form">
                 <input type="email" class="form-control" placeholder="your email" />
                 <button type="submit" class="btn">submit</button>
-            </form>
+            </form> -->
+            <br><br><br>
+            </div>
+            <br>
         </div>
     </section>
     <!-- end of newsletter -->

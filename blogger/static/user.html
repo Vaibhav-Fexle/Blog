@@ -56,12 +56,12 @@
                         <!-- featured-center -->
                         <div class="section-center featured-center ">
                             <div class="row justify-content-start">
-                                {% for i in blog_all %}
+                                {% for i in blog_objs %}
                                     <div class="col-lg-6">
                                         <!-- single blog -->
                                         <article class="blog-card">
                                             <div class="blog-img-container">
-                                                <a href="{{i.urls}}"><img src="{{ i.pic1.url }}" class="blog-img" alt="pic1" /></a>
+                                                <a href="{{ i.urls }}"><img src="{{ i.pic1.url }}" class="blog-img" alt="" /></a>
                                                 <p class="blog-date">{{ i.created }}</p>
                                             </div>
                                             <!-- blog info -->
@@ -73,14 +73,13 @@
                                                     {% for j in i.cat_2 %}
                                                     <a href="{{ j.urls }}"><p>{{ j }}</p></a>
                                                     {% endfor %}
-                                                    </a>
                                                 </div>
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner.id }}/">
+                                                    <a href="/user/{{ i.owner }}/">
                                                         <p>
-                                                            <span><i class="fas fa-user"></i></span>{{ i.owner}}
+                                                            <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>
                                                     </a>
                                                     <a href="{{ i.urls }}">
@@ -92,16 +91,35 @@
                                         <!-- end of single blog -->
                                     </div>
                                 {% endfor %}
+
                             </div>
                         </div>
-                        <!-- end of blogs center -->
-                    <!-- end of featured blogs -->
+
+                        <div class="blog-btn mt-5">
+                            <span class="step-links">
+                                {% if blog_objs.has_previous %}
+                                    <a class="btn" href="?page=1">&laquo; first</a>
+                                    <a class="btn" href="?page={{ blog_objs.previous_page_number }}">previous</a>
+                                {% endif %}
+                                {% if pages > 1 %}
+                                <span class="current">
+                                    <span> Page {{ blog_objs.number }} of {{ blog_objs.paginator.num_pages }} </span>
+                                </span>
+                                {% endif %}
+
+                                {% if blog_objs.has_next %}
+                                    <a class="btn" href="?page={{ blog_objs.next_page_number }}">next</a>
+                                    <a class="btn" href="?page={{ blog_objs.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- newsletter -->
+    <!-- newsletter --
     <section class="section newsletter" id="newsletter">
         <div class="container section-center newsletter-center">
             <div class="newsletter-title">
@@ -114,7 +132,7 @@
             </form>
         </div>
     </section>
-    <!-- end of newsletter -->
+    -- end of newsletter -->
     {% endblock %}
 
     {% include 'footer.html' %}

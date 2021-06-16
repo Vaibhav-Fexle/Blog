@@ -38,24 +38,25 @@ from .serializers import *
 def home(request,*args, **kagrs):
     return redirect("/home/")
 
-data_all = DataSerializer(data={'categories':Categories.objects.all(),
-                                'popular': Blog.objects.all().order_by('-comment_count')[0:3],
-                                'blog': Blog.objects.all().order_by('-created')[4:14],
-                                'recent': Blog.objects.all().order_by('-created')[0:4],
-                            })
-data_all.is_valid(raise_exception=True)
+data = {
+        'categories' : CategoriesSerializer(Categories.objects.all(), many=True).instance,
+        'popular' : BlogSerializer(Blog.objects.all().order_by('-comment_count')[0:4], many=True).instance,
+        'blog' : BlogSerializer(Blog.objects.all().order_by('-created')[5:15] ,many=True).instance,
+        'recent': BlogSerializer(Blog.objects.all().order_by('-created')[0:4], many=True).instance,
+       }
+
 
 class Home_View(View):
     template_name = 'index.html'
     queryset = Blog.objects.all().order_by('-created')
 
     def get(self, request, *args, **kagrs):
-        return render(request, self.template_name, data_all.initial_data)
+        return render(request, self.template_name, data)
 
 
 class Blog_View(ListView):
     paginator_class = Paginator
-    paginate_by = 2
+    paginate_by = 3
     model = Blog
     template_name = "blog.html"
     queryset = Blog.objects.all().order_by('-created')
@@ -67,14 +68,13 @@ class Blog_View(ListView):
         else:
             return Blog.objects.all().order_by('-created')
 
-
     def get(self, request,*args, **kagrs):
         self.paginator_class = self.paginator_class(self.get_queryset(), self.paginate_by)
         page_number = request.GET.get('page')
         page_obj = self.paginator_class.get_page(page_number)
 
-        data = data_all.initial_data
-        data.update({'blog_all': page_obj, 'pages': int(self.paginator_class.num_pages) })
+        data['blog_objs'] = page_obj
+        data['pages'] = int(self.paginator_class.num_pages)
 
         return render(request, self.template_name, data)
 
@@ -85,36 +85,38 @@ class Blog_Create_View(LoginRequiredMixin, View, ModelFormMixin):
     template_name = "blog_create.html"
 
     model = Blog
-    form_class = BlogForm
+    form_class = BlogSerializer()
 
     def get(self, request,*args, **kagrs):
-        data = data_all.initial_data
-        data.update({'form' : self.get_form_class() })
+        data['form'] = self.get_form_class()
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):
         self.user = request.user
-        form = self.get_form()
+        form = BlogSerializer(data=request.POST)
         if form.is_valid():
-            self.form_valid(form)
+            self.form_valid(form.data)
         else:
-            self.form_invalid(form, request)
+            data['form'] = form
+            return render(self.request, self.template_name, data)
         return redirect("/user/")
 
-    def form_valid(self, form):
-        data = form.cleaned_data
-        blog = Blog.objects.create(owner=self.user, title=data['title'], description=data['description'], pic1=data['pic1'])
+    def form_valid(self, data ):
+        blog = Blog.objects.create( owner=self.user,
+                                    title=data['title'],
+                                    description=data['description']
+                                  )
+        if self.request.FILES.get('pic1'):
+            blog.pic1 = self.request.FILES.get('pic1')
         blog.categorie.set(data['categorie'])
+        blog.save()
         return redirect("/user/")
-
-    def form_invalid(self, form, *args, **kwargs):
-        return HttpResponseRedirect(form)
 
 
 class Category_View(View):
     template_name = "category.html"
     paginator_class = Paginator
-    paginate_by = 2
+    paginate_by = 3
 
     def get_queryset(self, slug=None, *args, **kagrs):
         if slug != None:
@@ -127,8 +129,8 @@ class Category_View(View):
         page_number = request.GET.get('page')
         page_obj = self.paginator_class.get_page(page_number)
 
-        data = data_all.initial_data
-        data.update({'blog_all': page_obj,'pages': int(self.paginator_class.num_pages) })
+        data['blog_objs'] = page_obj
+        data['pages'] = int(self.paginator_class.num_pages)
 
         return render(request, self.template_name, data)
 
@@ -143,24 +145,15 @@ class Detail_View(DetailView):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
-    def get_queryset(self):
-        return Comment.objects.filter(blog=self.get_object().id).order_by('-created')
-
     def get(self, request, slug=None, *args, **kagrs):
-
-        data = data_all.initial_data
-        data.update({'blog_obj': self.get_object(),
-                     'commment': self.get_queryset()
-                     })
+        data['blog_obj'] = self.get_object()
 
         return render(request, self.template_name, data)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kagrs):
         blog = self.get_object()
-        owner = None
-        if request.user.is_authenticated == True:
-            owner = request.user
+        owner = request.user or None
         description = request.POST.get('description')
         Comment.objects.create(blog=blog, owner=owner,description=description )
         blog.count()
@@ -170,27 +163,25 @@ class Detail_View(DetailView):
 class User_Edit_View(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'User'
-
     template_name = "useredit.html"
 
     def get_user(self):
         return self.request.user.blogger
 
     def get(self, request, *args, **kagrs):
-        form = BloggerForm(instance=self.get_user())
-
-        data = data_all.initial_data
-        data.update({'form' : form, })
-
+        data['form'] = BloggerSerializer(instance=self.get_user())
+        print('=====',data['form'])
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):
-        form = BloggerForm(request.POST, request.FILES, instance=self.get_user())
+        form = BloggerSerializer(instance=self.get_user(), data=request.POST, partial=True)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            if request.FILES.get('user_pic'):
+                user.user_pic = request.FILES.get('user_pic')
+            user.save()
         else:
-            data = data_all.initial_data
-            data.update({'form': form, })
+            data['form'] = form
             return render(request, self.template_name, data)
         return redirect("/user/")
 
@@ -201,6 +192,9 @@ class User_View(LoginRequiredMixin, DetailView ):
     redirect_field_name = 'User'
     model = Blogger
 
+    paginator_class = Paginator
+    paginate_by = 4
+
     def get_slug_field(self):
         return self.kwargs.get('slug') or self.request.user.blogger.slug
 
@@ -209,12 +203,16 @@ class User_View(LoginRequiredMixin, DetailView ):
                or self.request.user
 
     def get_queryset(self):
-        return Blog.objects.filter(owner=self.get_object())
+        return Blog.objects.filter(owner=self.get_object()).order_by('-created')
 
     def get(self, request, *args, **kagrs):
-        data = data_all.initial_data
-        data.update({'user': self.get_object(),
-                     'blog_all': self.get_queryset() })
+        self.paginator_class = self.paginator_class(self.get_queryset(), self.paginate_by)
+        page_number = request.GET.get('page')
+        page_obj = self.paginator_class.get_page(page_number)
+
+        data['blog_objs'] = page_obj
+        data['pages'] = int(self.paginator_class.num_pages)
+        data['user'] = self.get_object()
 
         return render(request, self.template_name, data)
 
@@ -236,6 +234,7 @@ class User_View(LoginRequiredMixin, DetailView ):
 #     }
 #     return render(request, "login.html", content)
 
+#TODO same userame check
 class Register_View(View):
     def get(self, request,*args, **kagrs):
         form = RegisterForm()
@@ -246,7 +245,8 @@ class Register_View(View):
         if form.is_valid():
             data = form.cleaned_data
             user = form.save()
-            Blogger.objects.create(user=user)
+            blogger = Blogger.objects.create(user=user)
+            blogger.save()
             login(request, user)
             return redirect("/user/")
 
@@ -271,30 +271,3 @@ def contact_view(request,*args, **kagrs):
         'blog'  :   blog
     }
     return render(request,"contact.html", content )
-
-'''
-
-[
-    {
-        "model": "blog.blog", 
-        "pk": 9, "fields": {
-                            "title": "asd", 
-                            "description": "", 
-                            "owner": 2, 
-                            "pic1": "user/profil.png", 
-                            "created": "2021-06-08T05:27:27.910Z", 
-                            "comment_count": 0, 
-                            "slug": "asd", 
-                            "categorie": [1, 2]
-                            }
-    }, 
-    {"model": "blog.blog", "pk": 8, "fields": {"title": "asdasd", "description": "asdasdasd", "owner": 2, "pic1": "blog/640x480-bazaar-solid-color-background.jp
-g", "created": "2021-06-08T05:23:41.099Z", "comment_count": 0, "slug": "asdasd", "categorie": [1, 2]}}, {"model": "blog.blog", "pk": 7, "fields": {"title": "asdasd", "description": "asdasd
-asdasd", "owner": 1, "pic1": "blog/640x480-air-force-dark-blue-solid-color-background.jpg", "created": "2021-06-08T05:22:47.442Z", "comment_count": 0, "slug": "asdasd", "categorie": [3]}},
- {"model": "blog.blog", "pk": 6, "fields": {"title": "asd", "description": "", "owner": 1, "pic1": "user/profil.png", "created": "2021-06-08T04:35:53.198Z", "comment_count": 0, "slug": "as
-d", "categorie": [1]}}, {"model": "blog.blog", "pk": 5, "fields": {"title": "asd", "description": "asdasd", "owner": 1, "pic1": "blog/640x480-alabama-crimson-solid-color-background_sJySThS
-.jpg", "created": "2021-06-08T04:21:56.198Z", "comment_count": 0, "slug": "asd", "categorie": [1]}}, {"model": "blog.blog", "pk": 1, "fields": {"title": "testblog1", "description": "testbl
-og1", "owner": 1, "pic1": "blog/640x480-alabama-crimson-solid-color-background.jpg", "created": "2021-06-07T13:33:35.623Z", "comment_count": 2, "slug": "testblog1", "categorie": [1]}}]
-
-
-'''
