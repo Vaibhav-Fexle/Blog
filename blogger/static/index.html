@@ -12,7 +12,7 @@
     {% block content %}
 
     <!-- Banner -->
-<!--     <div class="banner">
+    <!--  <div class="banner">
         <div class="container">
             <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
@@ -110,14 +110,14 @@
                 </a>
             </div>
         </div>
-    </div> -->
+    </div>  -->
     <!-- end banner -->
 
     <!-- popular post -->
     <div class="popular-post">
         <div class="container">
             <!-- popular post -->
-            <section class="section projects">
+            <section class="">
                 <!-- section title -->
                 <div class="section-title">
                     <h2>Popular Posts</h2>
@@ -173,6 +173,51 @@
         </div>
     </div>
     <!-- end categori list -->
+
+    <br><br>
+    <div class="container">
+        <div class="section-title mt-5">
+            <h2>Recent Posts</h2>
+            <div class="underline"></div>
+        </div>
+        <section class="section" id="featured">
+            <!-- featured-center -->
+            <div class="section-center featured-center ">
+                <div class="row justify-content-start">
+                    {% for i in recent %}
+                    <div class="col-lg-6">
+                        <!-- single blog -->
+                        <article class="blog-card">
+                            <!-- blog info -->
+                            <div class="blog-info">
+                                <div class="blog-title">
+                                    <a href="{{ i.urls }}">
+                                        <h4>{{ i.title }}</h4>
+                                    </a>
+                                    <p>{% for j in i.cat_1 %} <a href="{{ j.urls }}">{{j}}</a>{% endfor %}</p>
+                                </div>
+                                <p> {{ i.short }} </p>
+                                <!-- blog footer -->
+                                <div class="blog-footer">
+                                    <a href="/user/{{ i.owner }}/">
+                                        <p>
+                                            <span><i class="fas fa-user"></i></span>{{ i.owner }}
+                                        </p>
+                                    </a>
+                                    <a href="{{ i.urls }}">
+                                        <p>Read More...</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                        <!-- end of single blog -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
 
     <!-- Blog -->
     <div class="blog">
@@ -231,48 +276,7 @@
     </div>
     <!-- end blog -->
 
-    <div class="container mb-5">
-        <div class="section-title mt-5">
-            <h2>Recent Posts</h2>
-            <div class="underline"></div>
-        </div>
-        <section class="section" id="featured">
-            <!-- featured-center -->
-            <div class="section-center featured-center ">
-                <div class="row justify-content-start">
-                    {% for i in recent %}
-                    <div class="col-lg-6">
-                        <!-- single blog -->
-                        <article class="blog-card">
-                            <!-- blog info -->
-                            <div class="blog-info">
-                                <div class="blog-title">
-                                    <a href="{{ i.urls }}">
-                                        <h4>{{ i.title }}</h4>
-                                    </a>
-                                    <p>{% for j in i.cat_1 %} <a href="{{ j.urls }}">{{j}}</a>{% endfor %}</p>
-                                </div>
-                                <p> {{ i.short }} </p>
-                                <!-- blog footer -->
-                                <div class="blog-footer">
-                                    <a href="/user/{{ i.owner }}/">
-                                        <p>
-                                            <span><i class="fas fa-user"></i></span>{{ i.owner }}
-                                        </p>
-                                    </a>
-                                    <a href="{{ i.urls }}">
-                                        <p>Read More...</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                        <!-- end of single blog -->
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </section>
-    </div>
+
     {% endblock %}
 
     {% include 'footer.html' %}

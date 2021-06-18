@@ -11,20 +11,19 @@
     {% include 'navbar.html' %}
     {% block content %}
     {% load rest_framework %}
-    <div class="pb-5">
-        <br><br>
+    <div class="pb-5" >
+        <br>
         <div class="container d-flex justify-content-center">
-            <article class="contact-form">
-                <h3>User Details</h3>
+            <!-- class="contact-form" -->
+            <article style="min-width: 400px;" >
+                <h3>{{ form.instance.user}} - Update</h3>
                 <hr>
                 <form  action="/user/profile_edit/" method="POST", enctype="multipart/form-data"> 
                     {% csrf_token %}
-                    
-                        {% render_form form template_pack='rest_framework/vertical' %}
+                    {% render_form form template_pack='rest_framework/vertical' %}
                     <br>
-                    <button type="submit" class="contact-btn btn">Update</button>
-                    <br><br>
-                    <button href="../" class="contact-btn btn">Cancel</button>
+                    <button style="margin-left: 60px;" name='update' value="update" type="submit" class="btn">Update</button>
+                    <button style="margin-left: 70px;" name='update' value="cancel" href="../" class="btn">Cancel</button>
                 </form>
             </article>
         </div>

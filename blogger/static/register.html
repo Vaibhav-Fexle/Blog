@@ -11,38 +11,35 @@
     {% include 'navbar.html' %}
     
     {% block content %}
-
+    {% load rest_framework %}
     <div class="pb-5">
         <div class="container d-flex justify-content-center">
-            <article class="contact-form">
+            <article class="">
                 <h3>Register</h3>
-                <p class="p-3">if you already have an account, please <a href="{% url 'login_view' %}">log in</a>!</p>
-                <form action="/register/" method="POST">{% csrf_token %}
-                    <div class="form-group">
-                        <!-- inputs -->
-                        <input type="text"     name="username"  placeholder="username"     class="form-control mb-3" />
-                        <input type="email"    name="email"     placeholder="email"        class="form-control mb-3" />
-                        <input type="password" name="password1" placeholder="password"     class="form-control mb-3" />
-                        <input type="password" name="password2" placeholder="confirmation" class="form-control mb-3" />
-                    </div>
-                    <!-- button -->
-                    <button type="submit" class="contact-btn btn">Register</button>
+                <hr>
+                <p class="p-3">if you already have an account, please <a style="text-decoration: underline;" href="{% url 'login_view' %}">log in</a>!</p>
+                <form action="/register/" method="POST">
+                    {% csrf_token %}
+                    
+                        {% render_form form template_pack='rest_framework/vertical' %}
+                        <br>
+                    <button style="margin-left: 70px;" name="register" value="register" type="submit" class="btn">Register</button>
+                    <button style="margin-left: 90px;" name="register" value="cancel" href="../" class="btn">Cancel</button>
                 </form>
             </article>
         </div>
     </div>
-
     <!-- newsletter -->
     <section class="section newsletter" id="newsletter">
         <div class="container section-center newsletter-center">
-            <div class="newsletter-title">
+            <!-- <div class="newsletter-title">
                 <h3>want latest post info and updates?</h3>
                 <p>Sign up for newsletter and stay up to date</p>
             </div>
             <form class="newsletter-form">
                 <input type="email" class="form-control" placeholder="your email" />
                 <button type="submit" class="btn">submit</button>
-            </form>
+            </form> -->
         </div>
     </section>
     <!-- end of newsletter -->

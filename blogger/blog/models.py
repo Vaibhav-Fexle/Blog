@@ -1,9 +1,7 @@
 from django.db import models
-from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-from taggit.managers import TaggableManager
-from taggit.models import Tag
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -32,7 +30,6 @@ class Blog(models.Model):
     pic1 = models.ImageField( default='noimage.jpg', upload_to='blog/')
     categorie = models.ManyToManyField(Categories)
     created = models.DateTimeField(auto_now_add=True)
-    tags = TaggableManager()
 
     comment_count = models.IntegerField(default=0)
     slug = models.SlugField(default=slugify(title))
@@ -60,7 +57,6 @@ class Blog(models.Model):
         self.comment_count = len(self.comment())
         self.save()
         return len(self.comment())
-
 
 
 class Comment(models.Model):
@@ -94,6 +90,15 @@ class Blogger(models.Model):
     joined = models.DateTimeField(auto_now_add=True)
     website = models.URLField(blank=True, null=True, default="", max_length=100)
     slug = models.SlugField(default=slugify(user))
+
+    is_staff = models.BooleanField(default=False, help_text=_('Designates whether this user should be treated as site staff.'
+                                                              'a staff user can add categories and update other user\'s status ') )
+    is_blogger = models.BooleanField(default=False, help_text=_('Designates whether this user should be treated as blogger on site.'
+                                                                'a blogger can create new blogs, view them and comment on them'))
+    is_viewer = models.BooleanField(default=True, help_text=_('Designates whether this user should be treated as viewer site.'
+                                                              'a viewer can view blogs and comment on it'))
+
+
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user)      # or self.slug

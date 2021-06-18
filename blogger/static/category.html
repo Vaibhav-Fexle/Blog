@@ -158,6 +158,15 @@
 
                 <div class="col-lg-4">
 
+                    {% if request.user.blogger.is_staff %}
+                        <a href="/blog/category/create/" class=" contact-btn btn user-btn">Add New Category</a>
+                        {% if slug %}
+                            <br><br>
+                            <a href="/blog/category/{{slug}}/delete/" class=" contact-btn btn user-btn">Delete this Category</a>
+                        {% endif %}
+                        <br><br>
+                    {% endif %}
+                    
                     {% include 'sidebar.html' %}
 
                 </div>

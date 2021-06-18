@@ -33,8 +33,14 @@
                         <h4>Website:</h4><p>{{ user.blogger.website }}</p>
                         <h4>Joined:</h4><p>{{ user.blogger.joined }}</p>
                         {% if request.user == user %}
-                        <a href="/user/profile_edit/" class="btn user-btn">Edit</a>
-                        <a href="/blog/create/" class="btn user-btn">New Blog</a>
+                            <a href="/user/profile_edit/" class="btn user-btn">Edit</a>
+                        {% endif %}
+                        {% if request.user.blogger.is_blogger %}
+                            <a href="/blog/create/" class="btn user-btn">New Blog</a>
+                        {% endif %}
+
+                        {% if request.user.blogger.is_staff %}
+                            <a href="/user/{{user.blogger.slug}}/update/" class="btn user-btn">Update</a>
                         {% endif %}
                     </article>
                 </div>

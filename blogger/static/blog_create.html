@@ -15,18 +15,19 @@
     <div class="pb-5">
         <br>
         <div class="container d-flex justify-content-center">
-            <article class="contact-form">
+            <article style="min-width: 400px;">
         
                 {% if form.instance %}
                     <h3>{{form.instance}} - update</h3>
                     <hr>
                     <!-- class="form-horizontal form-group" -->
+                    
                     <form  action="/blog/post/{{form.instance.slug}}/update/" method="POST", enctype="multipart/form-data"> 
                         {% csrf_token %}
                         {% render_form form template_pack='rest_framework/vertical' %}
-                        <button type="submit" class="contact-btn btn">Update</button>
-                        <br><br>
-                        <button type="cancel" href="../" class="contact-btn btn">Cancel</button>
+                        <br>
+                        <button style="margin-left: 80px;" name="update_blog" value="update_blog" type="submit" class="btn">Update</button>
+                        <button style="margin-left: 60px;" name="update_blog" value="cancel" type="cancel" href="../" class="btn">Cancel</button>
                         
                     </form>
                 {% else %}
@@ -36,10 +37,9 @@
                     <form  action="/blog/create/" method="POST", enctype="multipart/form-data"> 
                         {% csrf_token %}
                         {% render_form form template_pack='rest_framework/vertical' %}
-                        <button type="submit" class="contact-btn btn">Create Blog</button>
-                        <br><br>
-
-                        <button type="cancel" href="../" class="contact-btn btn">Cancel</button>
+                        <br>
+                        <button style="margin-left: 40px;" name="create_blog" value="create_blog" type="submit" class="btn">Create Blog</button>
+                        <button style="margin-left: 60px;" name="create_blog" value="cancel" type="cancel" href="../" class="btn">Cancel</button>
                     </form>
                 {% endif %}
 

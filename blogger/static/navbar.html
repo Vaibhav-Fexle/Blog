@@ -3,7 +3,7 @@
     <div class="nav-center">
         <!-- nav header -->
         <div class="nav-header">
-            <img src="{% static './img/logo.png' %}" class="nav-logo" alt="" />
+            <img src="{% static './img/logo o1.png' %}" class="nav-logo" alt="" />
             <button class="nav-btn" id="nav-btn">
                 <i class="fas fa-bars"></i>
             </button>
@@ -17,6 +17,8 @@
             <li><div class="dropdown">
                     <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"aria-expanded="false">Category</a>
                     <ul class="dropdown-menu" aria-labelledby="UserDropdown">
+                        <li><a class="dropdown-item" href="/blog/category/">All Category</a></li>
+                        <hr>
                         {% for i in categories %}
                         <li><a class="dropdown-item" href="{{ i.urls }}">{{ i.title }}</a></li>
                         {% endfor %}
@@ -34,7 +36,9 @@
                     
                     <ul class="dropdown-menu" aria-labelledby="UserDropdown">
                         <li><a class="dropdown-item" href="/user/">Profile</a></li>
+                        {% if request.user.blogger.is_blogger %}
                         <li><a href="/blog/create/" class="dropdown-item">New Blog</a></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="/logout/">Logout</a></span>
                     </ul>
 

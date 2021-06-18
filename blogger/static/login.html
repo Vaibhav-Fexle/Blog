@@ -10,22 +10,33 @@
     <!-- navbar -->
     {% include 'navbar.html' %}
     {% block content %}
-
+    <br>
     <div class="pb-5">
         <div class="container d-flex justify-content-center">
-            <article class="contact-form">
+            <article class="">
                 <h3>Login</h3>
-                <p>if you don't have a registered account, you can register <a href="{% url 'register_view' %}">here!</a></p>
+                <hr>
+                <p>if you don't have a registered account, you can register <a style="text-decoration: underline;" href="{% url 'register_view' %}">here!</a></p>
                 
                 <form action="{% url 'login_view' %}" method="POST">{% csrf_token %}
                     <div class="form-group">
-                        <!-- inputs -->
-                        <span class="form-control mb-3">{{ form.username.label_tag }}{{ form.username }}</span>
-                        <span class="form-control mb-3">{{ form.password.label_tag }}{{ form.password }}</span>
+                        <!-- inputs --> 
+                        {{ form.username.label_tag }}     {{ form.username }}
+                        <br><br>
+                        {{ form.password.label_tag }}      {{ form.password }}
                     </div>
+                    {% if form.errors %}
+                    <p style="color:red;">Your username and password didn't match. Please try again.</p>
+                    {% endif %}
                     <!-- button -->
                     <!-- <p><a href="#">Forgot password?</a> </p> -->
-                    <button type="submit" class="contact-btn btn">Login</button>
+                    <br>
+                    <button style="margin-left: 140px;" type="submit" class="btn">Login</button>
+                    <!-- <button style="margin-left: 70px;" href="../" class="btn">Cancel</button> -->
+
+
+
+                    <br><br>
                 </form>
             </article>
         </div>
