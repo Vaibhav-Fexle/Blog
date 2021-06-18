@@ -129,7 +129,7 @@
                     <!-- single post -->
                     <a href="{{ i.urls }}" class="project">
                         <article class="project">
-                            <img src="{{ i.pic1.url }}" alt="" class="project-img" />
+                            <img src="{{ i.photo.url }}" alt="{{i.title}}" class="project-img" />
                             <div class="project-info">
                                 <h4>{{ i.title }}</h4>
                                 <p>{% for j in i.cat_1 %} {{j}} {% endfor %}</p>
@@ -238,7 +238,7 @@
                                         <!-- single blog -->
                                         <article class="blog-card">
                                             <div class="blog-img-container">
-                                                <a href="{{i.urls}}"><img src="{{ i.pic1.url }}" class="blog-img" alt="pic1" /></a>
+                                                <a href="{{i.urls}}"><img src="{{ i.photo.url }}" class="blog-img" alt="{{i.title}}" /></a>
                                                 <p class="blog-date">{{ i.created }}</p>
                                             </div>
                                             <!-- blog info -->

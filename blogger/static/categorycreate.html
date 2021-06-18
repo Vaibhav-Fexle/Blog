@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>  
+    {% include 'head.html' %}   
+    <title>Create Category</title>
+</head>
+<body>
+
+    <!-- navbar -->
+    {% include 'navbar.html' %}
+    
+    {% block content %}
+    {% load rest_framework %}
+    <div class="pb-5">
+        <div class="container d-flex justify-content-center">
+            <article style="min-width: 350px;" class="">
+                <h3>New Category</h3>
+                <hr>
+                <form action="/blog/category/create/" method="POST">
+                    {% csrf_token %}
+                    
+                        {% render_form form template_pack='rest_framework/vertical' %}
+                        <br>
+                    <button style="margin-left: 40px;" name="create" value="create" type="submit" class="btn">Create</button>
+                    <button style="margin-left: 70px;" name="create" value="cancel" href="../" class="btn">Cancel</button>
+                </form>
+            </article>
+        </div>
+    </div>
+    <!-- newsletter -->
+    <section class="section newsletter" id="newsletter">
+        <div class="container section-center newsletter-center">
+            <!-- <div class="newsletter-title">
+                <h3>want latest post info and updates?</h3>
+                <p>Sign up for newsletter and stay up to date</p>
+            </div>
+            <form class="newsletter-form">
+                <input type="email" class="form-control" placeholder="your email" />
+                <button type="submit" class="btn">submit</button>
+            </form> -->
+        </div>
+    </section>
+    <!-- end of newsletter -->
+    {% endblock %}
+
+    {% include 'footer.html' %}
+    
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    {% include 'script.html' %}
+    
+</body>
+
+</html>

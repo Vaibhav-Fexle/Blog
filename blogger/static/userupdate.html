@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>  
+    {% include 'head.html' %}   
+    <title>User Update</title>
+</head>
+<body>
+
+    <!-- navbar -->
+    {% include 'navbar.html' %}
+    {% block content %}
+    {% load rest_framework %}
+    <div class="pb-5" >
+        <br>
+        <div class="container d-flex justify-content-center">
+            <!-- class="contact-form" -->
+            <article style="min-width: 400px;" >
+                <h3>{{ form.instance.user}} - Update</h3>
+                <hr>
+                <form  action="/user/{{form.instance.slug}}/update/" method="POST", enctype="multipart/form-data"> 
+                    {% csrf_token %}
+                    {% render_form form template_pack='rest_framework/vertical' %}
+                    <br>
+                    <button style="margin-left: 50px;" name='update' value="update" type="submit" class="btn">Update</button>
+                    <button style="margin-left: 50px;" name='update' value="cancel" class="btn">Cancel</button>
+                </form>
+            </article>
+        </div>
+    </div>
+    <br>
+
+    <!-- newsletter -->
+    <br>
+    <section class="section newsletter" id="newsletter">
+        <br>
+        <div class="container section-center newsletter-center">
+            <br>
+            <div class="newsletter-title">
+            <!--     <h3>want latest post info and updates?</h3>
+                <p>Sign up for newsletter and stay up to date</p>
+            </div>
+            <form class="newsletter-form">
+                <input type="email" class="form-control" placeholder="your email" />
+                <button type="submit" class="btn">submit</button>
+            </form> -->
+            <br><br><br>
+            </div>
+            <br>
+        </div>
+    </section>
+    <!-- end of newsletter -->
+    
+    {% endblock %}
+
+    {% include 'footer.html' %}
+    
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    {% include 'script.html' %}
+    
+</body>
+
+</html>

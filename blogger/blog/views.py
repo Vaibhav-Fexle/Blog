@@ -105,8 +105,8 @@ class Blog_Create_View(LoginRequiredMixin, View ):
                                     title=data['title'],
                                     description=data['description']
                                   )
-        if self.request.FILES.get('pic1'):
-            blog.pic1 = self.request.FILES.get('pic1')
+        if self.request.FILES.get('photo'):
+            blog.photo = self.request.FILES.get('photo')
         blog.categorie.set(data['categorie'])
         blog.save()
         return redirect("/user/")
@@ -134,8 +134,8 @@ class Blog_Update_View(LoginRequiredMixin, View ):
         form = BlogSerializer(instance=self.get_object(), data=request.POST, partial=True)
         if form.is_valid():
             blog = form.save()
-            if request.FILES.get('pic1'):
-                blog.pic1 = request.FILES.get('pic1')
+            if request.FILES.get('photo'):
+                blog.photo = request.FILES.get('photo')
             blog.save()
         else:
             data = get_data()

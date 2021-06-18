@@ -18,7 +18,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['title','description','categorie','pic1']
+        fields = ['title','description','categorie','photo']
 
 
 class CommentSerializer(serializers.ModelSerializer):

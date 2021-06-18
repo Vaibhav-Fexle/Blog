@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>  
+    {% include 'head.html' %}   
+    <title>Delete</title>
+</head>
+<body>
+
+    <!-- navbar -->
+    {% include 'navbar.html' %}
+    {% block content %}
+
+    <div class="pb-5">
+        <br>
+        <div class="container d-flex justify-content-center">
+            <article style="min-width: 500px;">
+        
+                    <h3>{{blog_obj.title}} - delete</h3>
+                    <hr>
+                    <!-- class="form-horizontal form-group" -->
+                    <form  action="." method="POST"> 
+                        {% csrf_token %}
+                        <h3>Do you want to delete blog category : </h3>
+                        <h2>"{{ obj.title }}"</h2>
+                        <br><br>
+                        <button style="margin-left: 50px;" name='delete' value='delete' type="submit" class="btn">Delete</button>
+                        <button style="margin-left: 60px;" name='delete' value="cancel" href="/user/" class="btn">Cancel</button>
+                    </form>
+
+            </article>
+        </div>
+    </div>
+
+    <!-- newsletter -->
+    <section class="section newsletter" id="newsletter">
+        <div class="container section-center newsletter-center">
+            <div class="newsletter-title">
+<!--                 <h3>want latest post info and updates?</h3>
+                <p>Sign up for newsletter and stay up to date</p>
+            </div>
+            <form class="newsletter-form">
+                <input type="email" class="form-control" placeholder="your email" />
+                <button type="submit" class="btn">submit</button>
+            </form> -->
+            <br><br>
+            </div>
+        </div>
+    </section>
+    <!-- end of newsletter -->
+    
+    {% endblock %}
+
+    {% include 'footer.html' %}
+    
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    {% include 'script.html' %}
+    
+</body>
+
+</html>

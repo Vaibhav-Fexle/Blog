@@ -19,7 +19,7 @@
                     <!-- featured Details -->
                     <section class="section" id="featured">
                         <div class="detail">
-                            <img src="{{ blog_obj.pic1.url }}" class="img-fluid" alt="{{blog_obj.title}}">
+                            <img src="{{ blog_obj.photo.url }}" class="img-fluid" alt="{{blog_obj.title}}">
                             <div class="post-cat mt-5">
                                 {% for i in blog_obj.categorie.all %}
                                 <a href="{{ i.urls }}" class="btn">{{ i }}</a>

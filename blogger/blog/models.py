@@ -22,12 +22,11 @@ class Categories(models.Model):
     def urls(self):
         return f"/blog/category/{self.slug}/"
 
-#TODO change pic1 to photo/image
 class Blog(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    pic1 = models.ImageField( default='noimage.jpg', upload_to='blog/')
+    photo = models.ImageField( default='noimage.jpg', upload_to='blog/')
     categorie = models.ManyToManyField(Categories)
     created = models.DateTimeField(auto_now_add=True)
 
