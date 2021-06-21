@@ -1,16 +1,18 @@
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from django.contrib.auth import login, views
+from django.contrib.auth import login, views, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic import View, ListView, DetailView
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import DeleteView, CreateView
 
 from .decorators import *
 from .serializers import *
@@ -29,7 +31,7 @@ def get_data():
         'categories' : CategoriesSerializer(Categories.objects.all(), many=True).instance,
         'popular' : BlogSerializer( blog.order_by('-comment_count')[0:6], many=True).instance,
         'blog' : BlogSerializer( blog.order_by('-created')[5:15] ,many=True).instance,
-        'recent': BlogSerializer( blog.order_by('-created')[0:4], many=True).instance,
+        'recent': BlogSerializer( blog.order_by('-created')[0:6], many=True).instance,
        }
     return data
 
@@ -44,7 +46,7 @@ class Home_View(View):
 
 class Blog_View(ListView):
     paginator_class = Paginator
-    paginate_by = 6
+    paginate_by = 10
     model = Blog
     template_name = "blog.html"
     queryset = Blog.objects.all().order_by('-created')
@@ -52,6 +54,7 @@ class Blog_View(ListView):
     def get_queryset(self):
         if self.request.GET.get('search') != None:
             search = self.request.GET.get('search')
+            messages.info(self.request, f'Searching: {search}')
             return Blog.objects.filter(title=search).order_by('-created')
         else:
             return Blog.objects.all().order_by('-created')
@@ -66,6 +69,31 @@ class Blog_View(ListView):
         data['pages'] = int(self.paginator_class.num_pages)
 
         return render(request, self.template_name, data)
+
+class Detail_View(DetailView):
+    template_name = "detail.html"
+    model = Blog
+
+    def get_slug_field(self):
+        return self.kwargs.get('slug') or None
+
+    def get_object(self):
+        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
+
+    def get(self, request, *args, **kagrs):
+        data = get_data()
+        data['blog_obj'] = self.get_object()
+        return render(request, self.template_name, data)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kagrs):
+        blog = self.get_object()
+        owner = request.user or None
+        description = request.POST.get('description')
+        Comment.objects.create(blog=blog, owner=owner,description=description )
+        blog.count()
+        messages.info(request, 'New Comment added on Blog')
+        return HttpResponseRedirect(request.path)
 
 class Blog_Create_View(LoginRequiredMixin, View ):
     login_url = '/login/'
@@ -109,6 +137,7 @@ class Blog_Create_View(LoginRequiredMixin, View ):
             blog.photo = self.request.FILES.get('photo')
         blog.categorie.set(data['categorie'])
         blog.save()
+        messages.info(self.request, f'New Blog Added: {blog.title}')
         return redirect("/user/")
 
 class Blog_Update_View(LoginRequiredMixin, View ):
@@ -137,6 +166,7 @@ class Blog_Update_View(LoginRequiredMixin, View ):
             if request.FILES.get('photo'):
                 blog.photo = request.FILES.get('photo')
             blog.save()
+            messages.info(request, f'Blog Updated: {blog.title}')
         else:
             data = get_data()
             data['form'] = form
@@ -162,7 +192,9 @@ class Blog_Delete_View(DeleteView, LoginRequiredMixin):
     def post(self, request, *args, **kwargs):
         if request.POST.get('delete') == 'delete':
             obj = self.get_object()
+            blog = obj.title
             obj.delete()
+            messages.info(request, f'Blog Deleted: {blog}')
             return redirect(self.success_url)
         return HttpResponseRedirect('../')
 
@@ -170,10 +202,11 @@ class Blog_Delete_View(DeleteView, LoginRequiredMixin):
 class Category_View(View):
     template_name = "category.html"
     paginator_class = Paginator
-    paginate_by = 6
+    paginate_by = 10
 
     def get_queryset(self, slug=None, *args, **kagrs):
         if slug != None:
+            messages.info(self.request, f'{slug} Categorie')
             return Blog.objects.filter(categorie__slug=slug).order_by('-created')
         else:
             return Blog.objects.all().order_by('-created')
@@ -192,6 +225,7 @@ class Category_View(View):
 
 class Category_Create_View(View, LoginRequiredMixin):
     template_name = "categorycreate.html"
+
     def get(self, request, slug=None, *args, **kagrs):
         data = get_data()
         data['form'] = CategoriesSerializer()
@@ -204,6 +238,7 @@ class Category_Create_View(View, LoginRequiredMixin):
         form = CategoriesSerializer(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.info(request, 'Categorie Added')
         else:
             data = get_data_one()
             data['form'] = form
@@ -230,89 +265,11 @@ class Category_Delete_View(DeleteView, LoginRequiredMixin):
         if request.POST.get('delete') == 'delete':
             obj = self.get_object()
             obj.delete()
+            messages.info(request, 'Caegorie Deleted')
             return redirect(self.success_url)
+
         return HttpResponseRedirect('../')
 
-
-class Detail_View(DetailView):
-    template_name = "detail.html"
-    model = Blog
-
-    def get_slug_field(self):
-        return self.kwargs.get('slug') or None
-
-    def get_object(self):
-        return get_object_or_404(self.model, slug=self.get_slug_field()) or None
-
-    def get(self, request, *args, **kagrs):
-        data = get_data()
-        data['blog_obj'] = self.get_object()
-        return render(request, self.template_name, data)
-
-    @method_decorator(login_required)
-    def post(self, request, *args, **kagrs):
-        blog = self.get_object()
-        owner = request.user or None
-        description = request.POST.get('description')
-        Comment.objects.create(blog=blog, owner=owner,description=description )
-        blog.count()
-        return HttpResponseRedirect(request.path)
-
-
-class User_Edit_View(LoginRequiredMixin, View):
-    login_url = '/login/'
-    redirect_field_name = 'User'
-    template_name = "useredit.html"
-
-    def get_user(self):
-        return self.request.user.blogger
-
-    def get(self, request, *args, **kagrs):
-        data = get_data()
-        data['form'] = BloggerSerializer(instance=self.get_user())
-        return render(request, self.template_name, data)
-
-    def post(self, request, *args, **kagrs):
-        if request.POST.get('update') == 'cancel':
-            return HttpResponseRedirect('../')
-
-        form = BloggerSerializer(instance=self.get_user(), data=request.POST, partial=True)
-        if form.is_valid():
-            user = form.save()
-            if request.FILES.get('user_pic'):
-                user.user_pic = request.FILES.get('user_pic')
-            user.save()
-        else:
-            data = get_data()
-            data['form'] = form
-            return render(request, self.template_name, data)
-        return redirect("/user/")
-
-class User_Update_View(LoginRequiredMixin, View):
-    login_url = '/login/'
-    template_name = "userupdate.html"
-
-    def get_user(self):
-        self.slug = self.kwargs.get('slug')
-        return get_object_or_404(Blogger, slug=self.slug) or self.request.user.blogger
-
-    def get(self, request, *args, **kwargs):
-        data = get_data()
-        data['form'] = BloggerUpdateSerializer(instance=self.get_user())
-        return render(request, self.template_name, data)
-
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('update') == 'cancel':
-            return HttpResponseRedirect('/user/{}/'.format(self.kwargs.get('slug')))
-
-        form = BloggerUpdateSerializer(instance=self.get_user(), data=request.POST )
-        if form.is_valid():
-            form.save()
-        else:
-            data = get_data()
-            data['form'] = form
-            return render(request, self.template_name, data)
-        return redirect("/user/{}/".format(self.slug))
 
 class User_View(LoginRequiredMixin, DetailView ):
     template_name = "user.html"
@@ -321,7 +278,7 @@ class User_View(LoginRequiredMixin, DetailView ):
     model = Blogger
 
     paginator_class = Paginator
-    paginate_by = 4
+    paginate_by = 8
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or self.request.user.blogger.slug
@@ -345,6 +302,69 @@ class User_View(LoginRequiredMixin, DetailView ):
 
         return render(request, self.template_name, data)
 
+class User_Edit_View(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'User'
+    template_name = "useredit.html"
+
+
+    def get_user(self):
+        return self.request.user.blogger
+
+    def get(self, request, *args, **kagrs):
+        data = get_data()
+        data['form'] = BloggerSerializer(instance=self.get_user())
+        return render(request, self.template_name, data)
+
+    def post(self, request, *args, **kagrs):
+        if request.POST.get('update') == 'cancel':
+            return HttpResponseRedirect('../')
+
+        form = BloggerSerializer(instance=self.get_user(), data=request.POST, partial=True)
+        data = get_data()
+        if form.is_valid():
+            user = form.save()
+            if request.FILES.get('user_pic'):
+                user.user_pic = request.FILES.get('user_pic')
+            user.save()
+            messages.info(request,'User Profile Updated')
+        else:
+            data['form'] = form
+            return render(request, self.template_name, data)
+        return redirect("/user/")
+
+class User_Update_View(LoginRequiredMixin, View):
+    login_url = '/login/'
+    template_name = "userupdate.html"
+
+    def get_user(self):
+        self.slug = self.kwargs.get('slug')
+        return get_object_or_404(Blogger, slug=self.slug) or self.request.user.blogger
+
+    def get(self, request, *args, **kwargs):
+        data = get_data()
+        data['form'] = BloggerUpdateSerializer(instance=self.get_user())
+        return render(request, self.template_name, data)
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('update') == 'cancel':
+            return HttpResponseRedirect('/user/{}/'.format(self.kwargs.get('slug')))
+
+        form = BloggerUpdateSerializer(instance=self.get_user(), data=request.POST )
+        if form.is_valid():
+            user = form.save()
+            if user.is_staff:
+                messages.info(request, 'User Updated - User is now in Staff')
+            elif user.is_blogger:
+                messages.info(request, 'User Updated - User is now a Blogger')
+            else:
+                messages.info(request, 'User Updated')
+        else:
+            data = get_data()
+            data['form'] = form
+            return render(request, self.template_name, data)
+        return redirect("/user/{}/".format(self.slug))
+
 
 class Register_View(View):
     template_name = "register.html"
@@ -366,6 +386,7 @@ class Register_View(View):
             blogger = Blogger.objects.create(user=user)
             blogger.save()
             login(request, user)
+            messages.info(request, f'Thanks For Joing {blogger}')
             return redirect("/user/")
         else:
             data = get_data()
@@ -380,6 +401,21 @@ class Login_View(views.LoginView):
         context['categories'] = CategoriesSerializer(Categories.objects.all(), many=True).instance
         return context
 
+    def form_valid(self, form):
+        login(self.request, form.get_user())
+        messages.info(self.request,f'Welcome back {form.get_user()}')
+        return HttpResponseRedirect(self.get_success_url())
+
+class Logout_View(views.LogoutView):
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        logout(request)
+        messages.info(self.request, f'successfully Logout : {user}')
+        next_page = self.get_next_page()
+        if next_page:
+            return HttpResponseRedirect(next_page)
+        return super().dispatch(request, *args, **kwargs)
 
 
 def about_view(request,*args, **kagrs):

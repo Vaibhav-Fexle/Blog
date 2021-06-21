@@ -1,14 +1,11 @@
 <!doctype html>
 <html lang="en">
 {% load static %}
-<head>  
-    {% include 'head.html' %}   
+<head>   
     <title>{{blog_obj.title}}</title>
+    {% include 'head.html' %}   
 </head>
 <body>
-
-    <!-- navbar -->
-    {% include 'navbar.html' %}
     {% block content %}
 
     <!-- Blog -->

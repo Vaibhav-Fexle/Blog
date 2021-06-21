@@ -102,3 +102,6 @@ class Blogger(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user)      # or self.slug
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.user)

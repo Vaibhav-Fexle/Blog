@@ -11,3 +11,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
 <link rel = "icon" href = "{% static './img/logo o2.png' %}" type = "image/icon type">
+
+{% include 'navbar.html' %}
+
+{% if messages %}
+	<div style="background-color:lightyellow;" class="section-title nav">
+	    {% for i in messages %}
+	        <h5 style="font-size: 16px">{{i}}</h5>
+	    {% endfor %}
+    </div>
+{% endif%}

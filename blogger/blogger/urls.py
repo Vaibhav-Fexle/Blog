@@ -39,7 +39,7 @@ urlpatterns = [
 
 
     path('login/', Login_View.as_view(),name='login_view'),
-    path('logout/', auth.views.LogoutView.as_view(), name="logout"),
+    path('logout/', Logout_View.as_view(), name="logout"),
     path('register/', Register_View.as_view(), name='register_view'),
 
 ]
