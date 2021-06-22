@@ -14,16 +14,17 @@
             <li><a href="/blog/">Blog</a></li>
             <!-- <li><a href="/blog/category/">Category</a></li> -->
 
-            <li><div class="dropdown">
+            <li>
+                <div class="dropdown">
                     <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"aria-expanded="false">Category</a>
-                    <ul class="dropdown-menu" aria-labelledby="UserDropdown">
-                        <li><a class="dropdown-item" href="/blog/category/">All Category</a></li>
-                        <hr>
+                    <ul style="height: 300px;" class="hidden-scrollbar dropdown-menu" aria-labelledby="UserDropdown">
+                        <li style="background-color:lightyellow"><a class="dropdown-item" href="/blog/category/">All Category</a></li>
                         {% for i in categories %}
                         <li><a class="dropdown-item" href="{{ i.urls }}">{{ i.title }}</a></li>
                         {% endfor %}
+                        <li style="height: .15rem; background-color: red;" class="underline"></li>
                     </ul>
-                    </div>
+                </div>
             </li>
 
             <!-- <li><a href="/about/">about</a></li> -->

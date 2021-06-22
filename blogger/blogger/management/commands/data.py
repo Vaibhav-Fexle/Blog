@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        img = 30
+        img = 40
         maxcom = 40
         faker = Faker(['en'])
         faker.add_provider(Providers)
@@ -59,7 +59,7 @@ class Command(BaseCommand):
             print('User -',user.username)
             user.set_password('1234test')
 
-            bio=faker.text(max_nb_chars=50)
+            bio=faker.text(max_nb_chars=200)
             pic = randint(0,img)
             Blogger.objects.create(user=user, bio=bio, website=data['website'][0],
                                       user_pic=f'static/color/{pic}.jpg')
@@ -82,7 +82,7 @@ class Command(BaseCommand):
         ##      create blog 3000
         for i in range(3000):
             title = faker.text(max_nb_chars=15)
-            des = faker.text(max_nb_chars=300)
+            des = faker.text(max_nb_chars=500)
             owner = faker.blog_blogger()
             pic = randint(0,img)
             photo = f'static/color/{pic}.jpg'
@@ -102,9 +102,10 @@ class Command(BaseCommand):
             count = randint(5, maxcom)
             for j in range(count):
                 user = faker.viewer()
-                text = faker.text(max_nb_chars=100)
+                text = faker.text(max_nb_chars=200)
                 Comment.objects.create(blog=i, owner=user.user, description=text )
-            i.save()
+
+            i.count()
 
             print('comment -',i)
 

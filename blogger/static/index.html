@@ -151,7 +151,7 @@
                     <h2>Categories</h2>
                     <div class="underline"></div>
                 </div>
-                <div class="section-center services-center">
+                <div style="height: 440px;" class="hidden-scrollbar section-center services-center">
                     <!-- single  service category-->
                     {% for i in categories %}
                     <article class="service">
@@ -162,6 +162,8 @@
                         </a>
                     </article>
                     {% endfor %}
+                    <div></div>
+                    <div style="width: 20rem; background-color: red;" class="underline"></div>
                     <!-- end of single service category -->
                 </div>
 

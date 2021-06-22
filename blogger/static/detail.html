@@ -58,9 +58,11 @@
                         {% if blog_obj.comment|length > 0 %}
                         <div class="comment-area mt-5">
                             <!-- Comment Area Start -->
-                            <div class="comment_area clearfix mt-70">
+                            <div style="height: 1000px;" class="hidden-scrollbar comment_area clearfix mt-70">
                                 <ul>
                                     <!-- Single Comment Area -->
+                                    <li style="width: 10rem;" class="underline"></li>
+
                                     {% for i in blog_obj.comment %}
                                         <li class="single_comment_area">
                                             <!-- Comment Content -->
@@ -102,6 +104,8 @@
                                             {% endif %} -->
                                         </li>
                                     {% endfor %}
+
+                                    <li style="width: 10rem; background-color: red;" class="underline"></li>
                                 </ul>
                             </div>
                         </div>
