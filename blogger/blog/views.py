@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 
 from django.shortcuts import render, get_object_or_404
@@ -73,6 +72,7 @@ class Blog_View(ListView):
 class Blog_Detail_View(DetailView):
     template_name = "blog_detail.html"
     model = Blog
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -95,11 +95,12 @@ class Blog_Detail_View(DetailView):
         messages.info(request, 'New Comment added on Blog')
         return HttpResponseRedirect(request.path)
 
-class Blog_Create_View(LoginRequiredMixin, View ):
+class Blog_Create_View(LoginRequiredMixin, CreateView ):
     login_url = '/login/'
     redirect_field_name = 'User'
     template_name = "blog_create.html"
     model = Blog
+    permission_classes = [IsAuthenticated]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -127,7 +128,6 @@ class Blog_Create_View(LoginRequiredMixin, View ):
             return render(self.request, self.template_name, data)
         return redirect("/user/")
 
-
     def post_valid(self, data ):
         blog = Blog.objects.create( owner=self.user,
                                     title=data['title'],
@@ -144,6 +144,7 @@ class Blog_Edit_View(LoginRequiredMixin, View ):
     login_url = '/login/'
     template_name = "blog_create.html"
     model = Blog
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -179,6 +180,7 @@ class Blog_Delete_View(DeleteView, LoginRequiredMixin):
     template_name = "blog_delete.html"
     model = Blog
     success_url = '/user/'
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -225,6 +227,7 @@ class Category_View(View):
 
 class Category_Create_View(View, LoginRequiredMixin):
     template_name = "categorycreate.html"
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, slug=None, *args, **kagrs):
         data = get_data()
@@ -251,6 +254,7 @@ class Category_Delete_View(DeleteView, LoginRequiredMixin):
     template_name = "categorydelete.html"
     success_url = '/blog/category/'
     model = Categories
+    permission_classes = [IsAuthenticated]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -280,6 +284,8 @@ class User_View(LoginRequiredMixin, DetailView ):
     paginator_class = Paginator
     paginate_by = 8
 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_slug_field(self):
         return self.kwargs.get('slug') or self.request.user.blogger.slug
 
@@ -306,7 +312,7 @@ class User_Edit_View(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'User'
     template_name = "useredit.html"
-
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_user(self):
         return self.request.user.blogger
@@ -336,6 +342,7 @@ class User_Edit_View(LoginRequiredMixin, View):
 class User_Update_View(LoginRequiredMixin, View):
     login_url = '/login/'
     template_name = "userupdate.html"
+    permission_classes = [IsAuthenticated]
 
     def get_user(self):
         self.slug = self.kwargs.get('slug')
