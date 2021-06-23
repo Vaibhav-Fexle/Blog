@@ -10,15 +10,15 @@
         </div>
         <!-- nav links -->
         <ul class="nav-links" style="margin: 0px 0px 0px 300px;">
-            <li><a href="/home/">home</a></li>
-            <li><a href="/blog/">Blog</a></li>
+            <li><a href="{% url 'home'%}">home</a></li>
+            <li><a href="{% url 'blog:blog' %}">Blog</a></li>
             <!-- <li><a href="/blog/category/">Category</a></li> -->
 
             <li>
                 <div class="dropdown">
                     <a class=" dropdown-toggle" href="#" role="button" id="UserDropdown" data-toggle="dropdown"aria-expanded="false">Category</a>
                     <ul style="height: 300px;" class="hidden-scrollbar dropdown-menu" aria-labelledby="UserDropdown">
-                        <li style="background-color:lightyellow"><a class="dropdown-item" href="/blog/category/">All Category</a></li>
+                        <li style="background-color:lightyellow"><a class="dropdown-item" href="{% url 'blog:category_view' %}">All Category</a></li>
                         {% for i in categories %}
                         <li><a class="dropdown-item" href="{{ i.urls }}">{{ i.title }}</a></li>
                         {% endfor %}
@@ -36,15 +36,15 @@
                         aria-expanded="false">{{ request.user }}</a>
                     
                     <ul class="dropdown-menu" aria-labelledby="UserDropdown">
-                        <li><a class="dropdown-item" href="/user/">Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'user_view'%}">Profile</a></li>
                         {% if request.user.blogger.is_blogger %}
-                        <li><a href="/blog/create/" class="dropdown-item">New Blog</a></li>
+                        <li><a href="{% url 'blog:blog_create_view'%}" class="dropdown-item">New Blog</a></li>
                         {% endif %}
-                        <li><a class="dropdown-item" href="/logout/">Logout</a></span>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></span>
                     </ul>
 
                 {% else %}
-                    <a href="/login/" role="button" id="UserDropdown" 
+                    <a href="{% url 'login' %}" role="button" id="UserDropdown" 
                         aria-expanded="false">
                        login
                     </a>

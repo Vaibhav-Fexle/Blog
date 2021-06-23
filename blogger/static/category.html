@@ -65,7 +65,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner }}/">
+                                                    <a href="{% url 'user_single_view' slug=i.owner %}">
                                                         <p>
                                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>
@@ -104,7 +104,7 @@
 
                         <!-- end of blogs center -->
                         <div class="blog-btn mt-5">
-                            <a href="/blog/" class="btn">all blogs</a>
+                            <a href="{% url 'blog:blog' %}" class="btn">all blogs</a>
                         </div>
                     </section>
                     <!-- end of featured blogs -->
@@ -134,7 +134,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner }}/">
+                                                    <a href="{% url 'user_single_view' slug=i.owner %}">
                                                         <p>
                                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>
@@ -156,10 +156,10 @@
                 <div class="col-lg-4">
 
                     {% if request.user.blogger.is_staff %}
-                        <a href="/blog/category/create/" class=" contact-btn btn user-btn">Add New Category</a>
+                        <a href="{% url 'blog:category_create_view' %}" class=" contact-btn btn user-btn">Add New Category</a>
                         {% if slug %}
                             <br><br>
-                            <a href="/blog/category/{{slug}}/delete/" class=" contact-btn btn user-btn">Delete this Category</a>
+                            <a href="{% url 'blog:category_delete_view' slug=slug %}" class=" contact-btn btn user-btn">Delete this Category</a>
                         {% endif %}
                         <br><br>
                     {% endif %}

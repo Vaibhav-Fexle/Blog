@@ -199,7 +199,7 @@
                                 <p> {{ i.short }} </p>
                                 <!-- blog footer -->
                                 <div class="blog-footer">
-                                    <a href="/user/{{ i.owner }}/">
+                                    <a href="{% url 'user_single_view' slug=i.owner %}">
                                         <p>
                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                         </p>
@@ -252,7 +252,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner }}/"><p>
+                                                    <a href="{% url 'user_single_view' slug=i.owner %}"><p>
                                                         <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                     </p></a>
                                                     <a href="{{ i.urls }}"><p>Read More...</p></a>
@@ -266,7 +266,7 @@
                         </div>
                         <!-- end of blogs center -->
                         <div class="blog-btn mt-5">
-                            <a href="/blog/" class="btn">all blog</a>
+                            <a href="{% url 'blog:blog'%}" class="btn">all blog</a>
                         </div>
                     </section>
                     <!-- end of featured blogs -->

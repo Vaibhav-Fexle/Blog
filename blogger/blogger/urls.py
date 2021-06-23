@@ -24,23 +24,21 @@ from blog.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
+    path('blog/', include('blog.urls')),
 
     path('user/', User_View.as_view(), name='user_view'),
     path('user/profile_edit/', User_Edit_View.as_view(), name='user_profile_edit_view'),
     path('user/<slug:slug>/', User_View.as_view(), name='user_single_view'),
-    path('user/<slug:slug>/update/', User_Update_View.as_view(), name='user_Update_view'),
-
-    path('blog/', include('blog.urls')),
+    path('user/<slug:slug>/update/', User_Update_View.as_view(), name='user_update_view'),
 
     path('home/',Home_View.as_view(), name='home_view'),
 
     path('about/',about_view,name='about_view'),
     path('contact/',contact_view,name='contact_view'),
 
-
-    path('login/', Login_View.as_view(),name='login_view'),
+    path('login/', Login_View.as_view(),name='login'),
     path('logout/', Logout_View.as_view(), name="logout"),
-    path('register/', Register_View.as_view(), name='register_view'),
+    path('register/', Register_View.as_view(), name='register'),
 
 ]
 

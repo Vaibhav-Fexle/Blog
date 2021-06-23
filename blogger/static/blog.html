@@ -45,7 +45,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner }}/">
+                                                    <a href="{% url 'user_single_view' slug=i.owner %}">
                                                         <p>
                                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>
@@ -115,7 +115,7 @@
                                                 <p>{{ i.short }}</p>
                                                 <!-- blog footer -->
                                                 <div class="blog-footer">
-                                                    <a href="/user/{{ i.owner }}/">
+                                                    <a href="{% url 'user_single_view' slug=i.owner %}">
                                                         <p>
                                                             <span><i class="fas fa-user"></i></span>{{ i.owner }}
                                                         </p>

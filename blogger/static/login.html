@@ -13,9 +13,9 @@
             <article class="">
                 <h3>Login</h3>
                 <hr>
-                <p>if you don't have a registered account, you can register <a style="text-decoration: underline;" href="{% url 'register_view' %}">here!</a></p>
+                <p>if you don't have a registered account, you can register <a style="text-decoration: underline;" href="{% url 'register' %}">here!</a></p>
                 
-                <form action="{% url 'login_view' %}" method="POST">{% csrf_token %}
+                <form action="{% url 'login' %}" method="POST">{% csrf_token %}
                     <div class="form-group">
                         <!-- inputs --> 
                         {{ form.username.label_tag }}     {{ form.username }}

@@ -70,8 +70,8 @@ class Blog_View(ListView):
 
         return render(request, self.template_name, data)
 
-class Detail_View(DetailView):
-    template_name = "detail.html"
+class Blog_Detail_View(DetailView):
+    template_name = "blog_detail.html"
     model = Blog
 
     def get_slug_field(self):
@@ -140,7 +140,7 @@ class Blog_Create_View(LoginRequiredMixin, View ):
         messages.info(self.request, f'New Blog Added: {blog.title}')
         return redirect("/user/")
 
-class Blog_Update_View(LoginRequiredMixin, View ):
+class Blog_Edit_View(LoginRequiredMixin, View ):
     login_url = '/login/'
     template_name = "blog_create.html"
     model = Blog
@@ -206,7 +206,7 @@ class Category_View(View):
 
     def get_queryset(self, slug=None, *args, **kagrs):
         if slug != None:
-            messages.info(self.request, f'{slug} Categorie')
+            messages.info(self.request, f'{Categories.objects.filter(slug=slug)[0]} Categorie')
             return Blog.objects.filter(categorie__slug=slug).order_by('-created')
         else:
             return Blog.objects.all().order_by('-created')
@@ -265,7 +265,7 @@ class Category_Delete_View(DeleteView, LoginRequiredMixin):
         if request.POST.get('delete') == 'delete':
             obj = self.get_object()
             obj.delete()
-            messages.info(request, 'Caegorie Deleted')
+            messages.info(request, 'Categorie Deleted')
             return redirect(self.success_url)
 
         return HttpResponseRedirect('../')
