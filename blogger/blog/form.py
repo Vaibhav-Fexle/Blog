@@ -22,8 +22,8 @@ class BloggerForm(forms.ModelForm):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
-        fields = '__all__'
-        exclude = ['slug','comment_count','owner', 'tags']
+        fields = ['description']
+        # exclude = ['slug','comment_count','owner', 'tags']
 
 
 class CommentForm(forms.ModelForm):

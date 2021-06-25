@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-g7ndkfvu&u5e_#1_k6d43464+lnua-ucy(mkpkt%+3*hzv5g!y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'blogger',
     'blog',
+    'ckeditor',
 
 ]
 
@@ -150,3 +151,5 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
 UPLOADED_FILES_USE_URL = 'blog/'
+
+CKEDITOR_UPLOAD_PATH = 'static/ckeditor/'

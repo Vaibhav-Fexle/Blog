@@ -30,12 +30,11 @@
                             </div>
                             <div class="article mt-3">
                                 <h1>{{ blog_obj.title }}</h1>
-                                <p class="mt-3">{{ blog_obj.description }}</p>
-                                <!-- <figcaption class="blockquote-footer mt-5">
-                                    <span>#Tags: </span>
-                                    <cite title="Source Title">Python, Django, Web Development</cite>
-                                </figcaption> -->
+                                <p class="mt-3">{{ blog_obj.description_short }}</p>
+                                <hr>
+                                <p class="mt-3">{{ blog_obj.description|safe }}</p>
                                 {% if request.user == blog_obj.owner %}
+                                <br><br>
                                 <a class="btn" href="{% url 'blog:blog_edit_view' slug=blog_obj.slug %}">Edit</a>
                                 <a class="btn" href="{% url 'blog:blog_delete_view' slug=blog_obj.slug %}">Delete</a>
                                 {% endif %}

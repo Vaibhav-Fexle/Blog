@@ -3,7 +3,7 @@
 {% load static %}
 <head>  
     <title>Edit User</title>
-    {% include 'head.html' %}      
+    {% include 'head.html' %}
 </head>
 <body>
     {% block content %}
@@ -22,18 +22,30 @@
                     <form  action="/blog/post/{{form.instance.slug}}/edit/" method="POST", enctype="multipart/form-data"> 
                         {% csrf_token %}
                         {% render_form form template_pack='rest_framework/vertical' %}
+                        {{ description.media }}
+                        <div>
+                            {{ description.description.label_tag }}
+                            <br>
+                            {{ description.description }}
+                        </div>
                         <br>
                         <button style="margin-left: 80px;" name="update_blog" value="update_blog" type="submit" class="btn">Update</button>
                         <button style="margin-left: 60px;" name="update_blog" value="cancel" type="cancel" href="../" class="btn">Cancel</button>
                         
                     </form>
                 {% else %}
-                    <h3>Blog</h3>   
+                    <h3>Blog</h3>
                     <hr>
                     <!-- class="form-horizontal form-group" -->
                     <form  action="/blog/create/" method="POST", enctype="multipart/form-data"> 
                         {% csrf_token %}
                         {% render_form form template_pack='rest_framework/vertical' %}
+                        {{ description.media }}    
+                        <div>
+                            {{ description.description.label_tag }}
+                            <br>
+                            {{ description.description }}
+                        </div>
                         <br>
                         <button style="margin-left: 40px;" name="create_blog" value="create_blog" type="submit" class="btn">Create Blog</button>
                         <button style="margin-left: 60px;" name="create_blog" value="cancel" type="cancel" href="../" class="btn">Cancel</button>

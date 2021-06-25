@@ -35,9 +35,10 @@
                                 <a href="{% url 'blog:blog_create_view' %}" class="btn user-btn">New Blog</a>
                             {% endif %}
                         {% endif %}
-                        {% if request.user.blogger.is_staff %}
+                        <!-- {% if request.user.blogger.is_staff %}
                             <a href="{% url 'user_update_view' slug=user.blogger.slug %}" class="btn user-btn">Update</a>
-                        {% endif %}
+                        {% endif %} -->
+
                     </article>
                 </div>
             </section>

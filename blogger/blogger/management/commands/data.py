@@ -39,17 +39,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        img = 40
+        img = 60
         maxcom = 40
         faker = Faker(['en'])
         faker.add_provider(Providers)
 
         ## create categories 30
 
-        for i in range(30):
-            d = faker.unique.blog_categorie()
-            cat = Categories.objects.create(title=d, description=d)
-            print('Categories -',cat)
+        # for i in range(30):
+        #     d = faker.unique.blog_categorie()
+        #     cat = Categories.objects.create(title=d, description=d)
+        #     print('Categories -',cat)
+        #     cat.save()
 
         ##      create viewer (user) 1000+300+30 ~~= 1400~1500
         for i in range(1400):
@@ -58,6 +59,7 @@ class Command(BaseCommand):
             user = User.objects.create(username=f'{name}{str(randint(0,9))}{str(randint(0,9))}', email=data['mail'], first_name=data['name'])
             print('User -',user.username)
             user.set_password('1234test')
+            user.groups.add(1)
 
             bio=faker.text(max_nb_chars=200)
             pic = randint(0,img)
@@ -69,6 +71,7 @@ class Command(BaseCommand):
             user = faker.unique.blogger()
             user.is_blogger = True
             user.save()
+            user.user.groups.add(2)
             print('blogger -', user)
 
         ##      create staff 30
@@ -76,13 +79,15 @@ class Command(BaseCommand):
             user = faker.unique.blogger()
             user.is_blogger = True
             user.is_staff = True
+            user.user.groups.add(3)
             user.save()
             print('staff -',user)
 
         ##      create blog 3000
         for i in range(3000):
             title = faker.text(max_nb_chars=15)
-            des = faker.text(max_nb_chars=500)
+            des = faker.text(max_nb_chars=1000)
+            des_s = faker.text(max_nb_chars=100)
             owner = faker.blog_blogger()
             pic = randint(0,img)
             photo = f'static/color/{pic}.jpg'
@@ -90,7 +95,7 @@ class Command(BaseCommand):
             pic = randint(1, 6)
             cat = [faker.categorie() for i in range(pic)]
 
-            blog = Blog.objects.create(title=title, description=des,
+            blog = Blog.objects.create(title=title,description_short=des_s, description=des,
                                        owner=owner.user, photo=photo )
             blog.categorie.set(cat)
             blog.save()

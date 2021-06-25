@@ -11,9 +11,10 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import View, ListView, DetailView
-from django.views.generic.edit import DeleteView, CreateView
+from django.views.generic.edit import DeleteView, CreateView, UpdateView
 
 from .decorators import *
+from .form import BlogForm
 from .serializers import *
 
 
@@ -108,9 +109,11 @@ class Blog_Create_View(LoginRequiredMixin, CreateView ):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
+    @method_decorator(allowed_users(['blogger']))
     def get(self, request,*args, **kwargs):
         data = get_data()
         data['form'] = BlogSerializer()
+        data['description'] = BlogForm()
 
         return render(request, self.template_name, data)
 
@@ -120,10 +123,17 @@ class Blog_Create_View(LoginRequiredMixin, CreateView ):
 
         self.user = request.user
         form = BlogSerializer(data=request.POST)
+        form.description = request.POST.get('description')
+        form2 = BlogForm(request.POST)
+        data = get_data()
         if form.is_valid():
+            if not form2.is_valid():
+                data['form'] = form
+                data['description'] = form2
+                return render(self.request, self.template_name, data)
             self.post_valid(form.data)
         else:
-            data = get_data()
+            data['description'] = form2
             data['form'] = form
             return render(self.request, self.template_name, data)
         return redirect("/user/")
@@ -131,7 +141,7 @@ class Blog_Create_View(LoginRequiredMixin, CreateView ):
     def post_valid(self, data ):
         blog = Blog.objects.create( owner=self.user,
                                     title=data['title'],
-                                    description=data['description']
+                                    description=self.request.POST.get('description')
                                   )
         if self.request.FILES.get('photo'):
             blog.photo = self.request.FILES.get('photo')
@@ -140,11 +150,11 @@ class Blog_Create_View(LoginRequiredMixin, CreateView ):
         messages.info(self.request, f'New Blog Added: {blog.title}')
         return redirect("/user/")
 
-class Blog_Edit_View(LoginRequiredMixin, View ):
+class Blog_Edit_View(LoginRequiredMixin, UpdateView ):
     login_url = '/login/'
     template_name = "blog_create.html"
     model = Blog
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -152,9 +162,12 @@ class Blog_Edit_View(LoginRequiredMixin, View ):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
+    @method_decorator(allowed_users(['blogger']))
+    @method_decorator(owner_user)
     def get(self, request,*args, **kwargs):
         data = get_data()
         data['form'] = BlogSerializer(instance=self.get_object())
+        data['description'] = BlogForm(instance=self.get_object())
         return render(request, self.template_name, data)
 
     def post(self, request, *args, **kagrs):
@@ -166,11 +179,13 @@ class Blog_Edit_View(LoginRequiredMixin, View ):
             blog = form.save()
             if request.FILES.get('photo'):
                 blog.photo = request.FILES.get('photo')
+            blog.description = self.request.POST.get('description')
             blog.save()
             messages.info(request, f'Blog Updated: {blog.title}')
         else:
             data = get_data()
             data['form'] = form
+            data['description'] = BlogForm(instance=self.get_object())
             return render(self.request, self.template_name, data)
 
         return HttpResponseRedirect('/blog/post/{}/'.format(blog.slug))
@@ -180,7 +195,7 @@ class Blog_Delete_View(DeleteView, LoginRequiredMixin):
     template_name = "blog_delete.html"
     model = Blog
     success_url = '/user/'
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_slug_field(self):
         return self.kwargs.get('slug') or None
@@ -188,6 +203,7 @@ class Blog_Delete_View(DeleteView, LoginRequiredMixin):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
+    @method_decorator(allowed_users(['blogger']))
     def get(self, request, *args,**kwargs):
         return render(request, self.template_name, {'blog_obj':self.get_object()})
 
@@ -229,6 +245,7 @@ class Category_Create_View(View, LoginRequiredMixin):
     template_name = "categorycreate.html"
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(allowed_users(['staff']))
     def get(self, request, slug=None, *args, **kagrs):
         data = get_data()
         data['form'] = CategoriesSerializer()
@@ -262,6 +279,7 @@ class Category_Delete_View(DeleteView, LoginRequiredMixin):
     def get_object(self):
         return get_object_or_404(self.model, slug=self.get_slug_field()) or None
 
+    @method_decorator(allowed_users(['staff']))
     def get(self, request, *args,**kwargs):
         return render(request, self.template_name, {'obj':self.get_object()})
 
@@ -312,7 +330,7 @@ class User_Edit_View(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'User'
     template_name = "useredit.html"
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     def get_user(self):
         return self.request.user.blogger
@@ -348,6 +366,7 @@ class User_Update_View(LoginRequiredMixin, View):
         self.slug = self.kwargs.get('slug')
         return get_object_or_404(Blogger, slug=self.slug) or self.request.user.blogger
 
+    @method_decorator(allowed_users(['staff']))
     def get(self, request, *args, **kwargs):
         data = get_data()
         data['form'] = BloggerUpdateSerializer(instance=self.get_user())
@@ -361,11 +380,22 @@ class User_Update_View(LoginRequiredMixin, View):
         if form.is_valid():
             user = form.save()
             if user.is_staff:
-                messages.info(request, 'User Updated - User is now in Staff')
-            elif user.is_blogger:
-                messages.info(request, 'User Updated - User is now a Blogger')
+                user.user.groups.add(3)
+                user.user.is_staff = True
+                user.save()
             else:
-                messages.info(request, 'User Updated')
+                user.user.groups.remove(3)
+                user.user.is_staff = False
+                user.save()
+
+            if user.is_blogger:
+                user.user.groups.add(2)
+                user.save()
+            else:
+                user.user.groups.remove(2)
+                user.save()
+
+            messages.info(request, 'User Updated')
         else:
             data = get_data()
             data['form'] = form
@@ -376,6 +406,7 @@ class User_Update_View(LoginRequiredMixin, View):
 class Register_View(View):
     template_name = "register.html"
 
+    @method_decorator(unauth_user)
     def get(self, request,*args, **kagrs):
         form = RegisterSerializer()
         data = get_data()
@@ -386,10 +417,10 @@ class Register_View(View):
         if request.POST.get('register') == 'cancel':
             return HttpResponseRedirect('/home/')
 
-        print(request.POST)
         form = RegisterSerializer(data=request.POST)
         if form.is_valid():
             user = form.save()
+            user.groups.add('viewer')
             blogger = Blogger.objects.create(user=user)
             blogger.save()
             login(request, user)
@@ -402,6 +433,11 @@ class Register_View(View):
 
 class Login_View(views.LoginView):
     template_name = 'login.html'
+    # permission_classes = [IsAuthenticated]
+
+    @method_decorator(unauth_user)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -412,6 +448,11 @@ class Login_View(views.LoginView):
         login(self.request, form.get_user())
         messages.info(self.request,f'Welcome back {form.get_user()}')
         return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        a = form.errors.get('__all__')
+        messages.info(self.request, f'{a}')
+        return HttpResponseRedirect(self.request.path)
 
 class Logout_View(views.LogoutView):
     @method_decorator(never_cache)
@@ -434,3 +475,7 @@ def contact_view(request,*args, **kagrs):
     blog = Blog.objects.all()
     content = { 'blog'  :   blog }
     return render(request,"contact.html", content )
+
+
+def handle_page_not_found(request, exception=None):
+    return redirect('home')

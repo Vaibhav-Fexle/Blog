@@ -40,7 +40,11 @@ urlpatterns = [
     path('logout/', Logout_View.as_view(), name="logout"),
     path('register/', Register_View.as_view(), name='register'),
 
+
 ]
 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+handler404 = 'blog.views.handle_page_not_found'

@@ -1,10 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django import forms
+from django.template.defaultfilters import safe
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from ckeditor.fields import *
+from ckeditor_uploader.fields import *
 
 # Create your models here.
+
 
 class Categories(models.Model):
     title = models.CharField(max_length=50, unique=True )
@@ -24,9 +29,11 @@ class Categories(models.Model):
 
 class Blog(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    description_short = models.CharField(max_length=200)
+    description = RichTextField()
+
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    photo = models.ImageField( default='noimage.jpg', upload_to='blog/')
+    photo = models.ImageField( default='noimage.jpg', upload_to='blog/' )
     categorie = models.ManyToManyField(Categories)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -40,7 +47,7 @@ class Blog(models.Model):
     def __str__(self):
         return self.title
     def short(self):
-        return self.description[0:100] + '...'
+        return safe(self.description_short[0:100]) + '...'
     def comment(self):
         return Comment.objects.filter(blog=self).order_by('-created')
     def urls(self):
@@ -67,23 +74,8 @@ class Comment(models.Model):
     def __str__(self):
         return str(self.blog) + str(self.owner) + str(self.description)
 
-    def reply(self):
-        return Reply.objects.filter(replyed_to=self).order_by('-created')
-
-
-class Reply(models.Model):                                                  # no need
-    owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    description = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
-    replyed_to = models.ForeignKey(Comment, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.owner) + str(self.description)
-
-
 class Blogger(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # DOB = models.DateField(null=True)
     user_pic = models.ImageField(default='user/profil.png', upload_to='user/', )
     bio = models.TextField(blank=True, null=True, default="")
     joined = models.DateTimeField(auto_now_add=True)
@@ -96,7 +88,6 @@ class Blogger(models.Model):
                                                                 'a blogger can create new blogs, view them and comment on them'))
     is_viewer = models.BooleanField(default=True, help_text=_('Designates whether this user should be treated as viewer site.'
                                                               'a viewer can view blogs and comment on it'))
-
 
 
     def save(self, *args, **kwargs):

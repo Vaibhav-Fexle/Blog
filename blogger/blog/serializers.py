@@ -1,3 +1,5 @@
+
+from .form import BlogForm
 from .models import *
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -16,9 +18,10 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 
 class BlogSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(read_only=True)
     class Meta:
         model = Blog
-        fields = ['title','description','categorie','photo']
+        fields = ['title','description_short','description','categorie','photo']
 
 
 class CommentSerializer(serializers.ModelSerializer):
